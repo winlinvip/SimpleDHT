@@ -32,8 +32,8 @@ Sample OK: 19 *C, 31 %
 
 This library including the following examples:
 
-1. DHT11Default: To sample the temperature and humidity every 200ms.
-1. DHT11WithRawBits: To sample the temperature and humidity, output the 40 raw bits every 200ms.
+1. DHT11Default: To sample the temperature and humidity.
+1. DHT11WithRawBits: To sample the temperature and humidity, output the 40 raw bits.
 
 
 ## Similar Projects
