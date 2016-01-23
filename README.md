@@ -36,7 +36,7 @@ This library including the following examples:
 1. DHT11WithRawBits: To sample the temperature and humidity, output the 40 raw bits.
 
 
-## Similar Projects
+## Links
 
 1. [adafruit/DHT-sensor-library](https://github.com/adafruit/DHT-sensor-library)
 1. [Arduino #4469: Add SimpleDHT library.](https://github.com/arduino/Arduino/issues/4469)
