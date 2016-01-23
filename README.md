@@ -8,7 +8,7 @@ Use pure c language, and supports Fast Sample(about 200ms interval).
 
 To use this library:
 
-1. Download the zip: https://github.com/winlinvip/simple-dht/archive/master.zip
+1. Download the zip from specified version: https://github.com/winlinvip/simple-dht/releases
 2. Import to Arduino: Arduino => Sketch => Include Library => Add .ZIP Library...
 3. Open example: Arduino => File => Examples => Simple DHT sensor library => DHT11Default
 4. Connect the DHT11 and Upload program to Arduino.
@@ -37,5 +37,6 @@ This library including the following examples:
 ## Similar Projects
 
 1. [adafruit/DHT-sensor-library](https://github.com/adafruit/DHT-sensor-library)
+1. [Arduino #4469: Add SimpleDHT library.](https://github.com/arduino/Arduino/issues/4469)
 
 Winlin 2016.1
