@@ -1,8 +1,10 @@
 # simple-dht
 
-Simple Arduino library for DHT11, etc Temp &amp; Humidity Sensors http://www.ladyada.net/learn/sensors/dht.html
+Simple, Stable and Fast Arduino Temp & Humidity Sensors for [DHT11 etc](http://www.ladyada.net/learn/sensors/dht.html).
 
-Use pure c language, and supports Fast Sample(about 200ms interval).
+1. Simple: Simple pure C code with lots of comments.
+1. Stable: Strictly follow the standard DHT protocol.
+1. Fast: Supports fast sample every 200ms+.
 
 ## Usage
 
