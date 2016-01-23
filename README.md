@@ -26,7 +26,7 @@ Sample OK: 19 *C, 31 %
 =================================
 ```
 
-> Remark: We can sample the DHT11 every 200ms+.
+> Remark: For DHT11, no more than 1 Hz sampling rate (once every second).
 
 ## Examples
 
