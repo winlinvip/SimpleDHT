@@ -13,7 +13,7 @@ To use this library:
 
 1. Download the zip from specified version: https://github.com/winlinvip/SimpleDHT/releases
 2. Import to Arduino: Arduino => Sketch => Include Library => Add .ZIP Library...
-3. Open example: Arduino => File => Examples => Simple DHT sensor library => DHT11Default
+3. Open example: Arduino => File => Examples => SimpleDHT => DHT11Default
 4. Connect the DHT11 and Upload program to Arduino.
 5. Open the Serial Window of Arduino IDE, we got the result as following.
 
