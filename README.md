@@ -2,7 +2,7 @@
 
 Simple Arduino library for DHT11, etc Temp &amp; Humidity Sensors http://www.ladyada.net/learn/sensors/dht.html
 
-Supports Fast Sample(about 200ms interval).
+Use pure c language, and supports Fast Sample(about 200ms interval).
 
 ## Usage
 
@@ -32,5 +32,10 @@ This library including the following examples:
 
 1. DHT11Default: To sample the temperature and humidity every 200ms.
 1. DHT11WithRawBits: To sample the temperature and humidity, output the 40 raw bits every 200ms.
+
+
+## Similar Projects
+
+1. [adafruit/DHT-sensor-library](https://github.com/adafruit/DHT-sensor-library)
 
 Winlin 2016.1
