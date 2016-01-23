@@ -4,7 +4,7 @@ Simple, Stable and Fast Arduino Temp & Humidity Sensors for [DHT11 etc](http://l
 
 1. Simple: Simple pure C code with lots of comments.
 1. Stable: Strictly follow the standard DHT protocol.
-1. Fast: Supports fast sample every 200ms+.
+1. Fast: Support 0.5HZ or 1HZ sampling rate.
 
 ## Usage
 

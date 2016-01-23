@@ -27,6 +27,6 @@ void loop() {
   Serial.print((int)temperature); Serial.print(" *C, "); 
   Serial.print((int)humidity); Serial.println(" %");
   
-  // atleast delay 200ms to resample the DHT11.
-  delay(200);
+  // DHT11 sampling rate is 1HZ.
+  delay(1000);
 }
