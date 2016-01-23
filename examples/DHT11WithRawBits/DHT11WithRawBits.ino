@@ -1,9 +1,11 @@
 #include <SimpleDHT.h>
 
 // for DHT11, 
-//      VCC: 5V
+//      VCC: 5V or 3V
 //      GND: GND
+//      DATA: 2
 int pinDHT11 = 2;
+
 void setup() {
   Serial.begin(115200);
 }
