@@ -25,7 +25,13 @@ void loop() {
   }
   
   Serial.print("Sample RAW Bits: ");
-  simple_dht11_serial_print(data);
+  for (int i = 0; i < 40; i++) {
+    Serial.print((int)data[i]);
+    if (i > 0 && ((i + 1) % 4) == 0) {
+      Serial.print(' ');
+    }
+  }
+  Serial.println("");
   
   Serial.print("Sample OK: ");
   Serial.print((int)temperature); Serial.print(" *C, ");
