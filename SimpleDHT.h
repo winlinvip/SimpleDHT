@@ -22,6 +22,16 @@
  SOFTWARE.
  */
 
+#ifndef SIMPLE_DHT_H
+#define SIMPLE_DHT_H
+
+// Arduino only.
+#if ARDUINO >= 100
+    #include "Arduino.h"
+#else
+    #include "WProgram.h"
+#endif
+
 // to read from dht11.
 // @param pin the DHT11 pin.
 // @param ptemperature output, NULL to igore.
@@ -32,3 +42,5 @@ extern int simple_dht11_read(int pin, byte* ptemperature, byte* phumidity, byte 
 
 // print the raw data of dht11, 5bytes(40bits).
 extern void simple_dht11_serial_print(byte data[40]);
+
+#endif

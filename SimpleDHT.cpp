@@ -22,6 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+#include "SimpleDHT.h"
+
 // confirm the OUTPUT is level in us, 
 // for example, when DHT11 start sample, it will
 //    1. PULL LOW 80us, call confirm(pin, 80, LOW)
