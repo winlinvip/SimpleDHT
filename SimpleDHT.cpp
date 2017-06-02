@@ -63,8 +63,8 @@ int SimpleDHT11::sample(int pin, byte data[40]) {
     digitalWrite(pin, LOW);
     delay(20);
     digitalWrite(pin, HIGH);
-    delayMicroseconds(30);
     pinMode(pin, INPUT);
+    delayMicroseconds(30);
 
     // DHT11 starting:
     //    1. PULL LOW 80us
