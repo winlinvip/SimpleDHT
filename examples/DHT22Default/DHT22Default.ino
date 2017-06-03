@@ -1,11 +1,11 @@
 #include <SimpleDHT.h>
 
-// for DHT11, 
+// for DHT22, 
 //      VCC: 5V or 3V
 //      GND: GND
 //      DATA: 2
-int pinDHT11 = 2;
-SimpleDHT11 dht11;
+int pinDHT22 = 2;
+SimpleDHT22 dht22;
 
 void setup() {
   Serial.begin(115200);
@@ -14,14 +14,14 @@ void setup() {
 void loop() {
   // start working...
   Serial.println("=================================");
-  Serial.println("Sample DHT11...");
+  Serial.println("Sample DHT22...");
   
   // read without samples.
   byte temperature = 0;
   byte humidity = 0;
   int err = SimpleDHT::ErrSuccess; 
-  if ((err = dht11.read(pinDHT11, &temperature, &humidity, NULL)) != SimpleDHT::ErrSuccess) {
-    Serial.print("Read DHT11 failed, err="); Serial.print(err);
+  if ((err = dht22.read(pinDHT22, &temperature, &humidity, NULL)) != SimpleDHT::ErrSuccess) {
+    Serial.print("Read DHT22 failed, err="); Serial.print(err);
     return;
   }
   
@@ -29,6 +29,6 @@ void loop() {
   Serial.print((int)temperature); Serial.print(" *C, "); 
   Serial.print((int)humidity); Serial.println(" %");
   
-  // DHT11 sampling rate is 1HZ.
-  delay(1000);
+  // DHT22 sampling rate is 0.5HZ.
+  delay(2000);
 }

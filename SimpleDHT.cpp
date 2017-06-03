@@ -32,6 +32,75 @@ int SimpleDHT::ErrDataRead = 103;
 int SimpleDHT::ErrDataEOF = 104;
 int SimpleDHT::ErrDataChecksum = 105;
 
+int SimpleDHT::confirm(int pin, int us, byte level) {
+    // wait one more count to ensure.
+    int cnt = us / 10 + 1;
+
+    bool ok = false;
+    for (int i = 0; i < cnt; i++) {
+        if (digitalRead(pin) != level) {
+            ok = true;
+            break;
+        }
+        delayMicroseconds(10);
+    }
+
+    if (!ok) {
+        return -1;
+    }
+    return ErrSuccess;
+}
+
+byte SimpleDHT::bits2byte(byte data[8]) {
+    byte v = 0;
+    for (int i = 0; i < 8; i++) {
+        v += data[i] << (7 - i);
+    }
+    return v;
+}
+
+int SimpleDHT::parse(byte data[40], byte* ptemperature, byte* phumidity) {
+    byte humidity = bits2byte(data);
+    byte humidity2 = bits2byte(data + 8);
+    byte temperature = bits2byte(data + 16);
+    byte temperature2 = bits2byte(data + 24);
+    byte check = bits2byte(data + 32);
+    byte expect = humidity + humidity2 + temperature + temperature2;
+    if (check != expect) {
+        return ErrDataChecksum;
+    }
+    *ptemperature = temperature;
+    *phumidity = humidity;
+    return ErrSuccess;
+}
+
+int SimpleDHT::read(int pin, byte* ptemperature, byte* phumidity, byte pdata[40]) {
+    int ret = ErrSuccess;
+
+    byte data[40] = {0};
+    if ((ret = sample(pin, data)) != ErrSuccess) {
+        return ret;
+    }
+
+    byte temperature = 0;
+    byte humidity = 0;
+    if ((ret = parse(data, &temperature, &humidity)) != ErrSuccess) {
+        return ret;
+    }
+
+    if (pdata) {
+        memcpy(pdata, data, 40);
+    }
+    if (ptemperature) {
+        *ptemperature = temperature;
+    }
+    if (phumidity) {
+        *phumidity = humidity;
+    }
+
+    return ret;
+}
+
 int SimpleDHT11::sample(int pin, byte data[40]) {
     // empty output data.
     memset(data, 0, 40);
@@ -93,72 +162,64 @@ int SimpleDHT11::sample(int pin, byte data[40]) {
     return ErrSuccess;
 }
 
-int SimpleDHT11::confirm(int pin, int us, byte level) {
-    // wait one more count to ensure.
-    int cnt = us / 10 + 1;
+int SimpleDHT22::sample(int pin, byte data[40]) {
+    // empty output data.
+    memset(data, 0, 40);
 
-    bool ok = false;
-    for (int i = 0; i < cnt; i++) {
-        if (digitalRead(pin) != level) {
-            ok = true;
-            break;
+    // notify DHT11 to start: 
+    //    1. PULL LOW 500us+ or 1ms+.
+    //    2. PULL HIGH 20-40us.
+    //    3. SET TO INPUT.
+    pinMode(pin, OUTPUT);
+    digitalWrite(pin, LOW);
+    delay(1);
+    digitalWrite(pin, HIGH);
+    pinMode(pin, INPUT);
+    delayMicroseconds(30);
+
+    // DHT11 starting:
+    //    1. PULL LOW 80us
+    //    2. PULL HIGH 80us
+    if (confirm(pin, 80, LOW)) {
+        return ErrStartLow;
+    }
+    if (confirm(pin, 80, HIGH)) {
+        return ErrStartHigh;
+    }
+
+    // DHT11 data transmite:
+    //    1. 1bit start, PULL LOW 50us
+    //    2. PULL HIGH 26-28us, bit(0)
+    //    3. PULL HIGH 70us, bit(1)
+    for (int j = 0; j < 40; j++) {
+        if (confirm(pin, 50, LOW)) {
+            return ErrDataLow;
         }
-        delayMicroseconds(10);
+
+        // read a bit, should never call method,
+        // for the method call use more than 20us,
+        // so it maybe failed to detect the bit0.
+        bool ok = false;
+        int tick = 0;
+        for (int i = 0; i < 8; i++, tick++) {
+            if (digitalRead(pin) != HIGH) {
+                ok = true;
+                break;
+            }
+            delayMicroseconds(10);
+        }
+        if (!ok) {
+            return ErrDataRead;
+        }
+        data[j] = (tick > 3? 1:0);
     }
 
-    if (!ok) {
-        return -1;
+    // DHT11 EOF:
+    //    1. PULL LOW 50us.
+    if (confirm(pin, 50, LOW)) {
+        return ErrDataEOF;
     }
+
     return ErrSuccess;
-}
-
-byte SimpleDHT11::bits2byte(byte data[8]) {
-    byte v = 0;
-    for (int i = 0; i < 8; i++) {
-        v += data[i] << (7 - i);
-    }
-    return v;
-}
-
-int SimpleDHT11::parse(byte data[40], byte* ptemperature, byte* phumidity) {
-    byte humidity = bits2byte(data);
-    byte humidity2 = bits2byte(data + 8);
-    byte temperature = bits2byte(data + 16);
-    byte temperature2 = bits2byte(data + 24);
-    byte check = bits2byte(data + 32);
-    byte expect = humidity + humidity2 + temperature + temperature2;
-    if (check != expect) {
-        return ErrDataChecksum;
-    }
-    *ptemperature = temperature;
-    *phumidity = humidity;
-    return ErrSuccess;
-}
-
-int SimpleDHT11::read(int pin, byte* ptemperature, byte* phumidity, byte pdata[40]) {
-    int ret = ErrSuccess;
-
-    byte data[40] = {0};
-    if ((ret = sample(pin, data)) != ErrSuccess) {
-        return ret;
-    }
-
-    byte temperature = 0;
-    byte humidity = 0;
-    if ((ret = parse(data, &temperature, &humidity)) != ErrSuccess) {
-        return ret;
-    }
-
-    if (pdata) {
-        memcpy(pdata, data, 40);
-    }
-    if (ptemperature) {
-        *ptemperature = temperature;
-    }
-    if (phumidity) {
-        *phumidity = humidity;
-    }
-
-    return ret;
 }
 

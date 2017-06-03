@@ -43,26 +43,6 @@ public:
     static int ErrDataEOF;
     // Error to validate the checksum.
     static int ErrDataChecksum;
-};
-
-
-/*
-    Simple DHT11
-
-    Simple, Stable and Fast DHT11 library.
-
-    The circuit:
-    * VCC: 5V or 3V
-    * GND: GND
-    * DATA: Digital ping, for instance 2.
-
-    23 Jan 2016 By winlin <winlin@vip.126.com>
-
-    https://github.com/winlinvip/SimpleDHT#usage
-    https://cdn-shop.adafruit.com/datasheets/DHT11-chinese.pdf
-
-*/
-class SimpleDHT11 : public SimpleDHT {
 public:
     // to read from dht11.
     // @param pin the DHT11 pin.
@@ -90,10 +70,53 @@ protected:
     // @param data a byte[40] to read bits to 5bytes.
     // @return 0 success; otherwise, error.
     // @remark please use simple_dht11_read().
-    virtual int sample(int pin, byte data[40]);
+    virtual int sample(int pin, byte data[40]) = 0;
     // parse the 40bits data to temperature and humidity.
     // @remark please use simple_dht11_read().
     int parse(byte data[40], byte* ptemperature, byte* phumidity);
+};
+
+
+/*
+    Simple DHT11
+
+    Simple, Stable and Fast DHT11 library.
+
+    The circuit:
+    * VCC: 5V or 3V
+    * GND: GND
+    * DATA: Digital ping, for instance 2.
+
+    23 Jan 2016 By winlin <winlin@vip.126.com>
+
+    https://github.com/winlinvip/SimpleDHT#usage
+    https://cdn-shop.adafruit.com/datasheets/DHT11-chinese.pdf
+
+*/
+class SimpleDHT11 : public SimpleDHT {
+protected:
+    virtual int sample(int pin, byte data[40]);
+};
+
+/*
+    Simple DHT11
+
+    Simple, Stable and Fast DHT11 library.
+
+    The circuit:
+    * VCC: 5V or 3V
+    * GND: GND
+    * DATA: Digital ping, for instance 2.
+
+    3 Jun 2017 By winlin <winlin@vip.126.com>
+
+    https://github.com/winlinvip/SimpleDHT#usage
+    https://cdn-shop.adafruit.com/datasheets/DHT22.pdf
+
+*/
+class SimpleDHT22 : public SimpleDHT {
+protected:
+    virtual int sample(int pin, byte data[40]);
 };
 
 #endif

@@ -32,7 +32,7 @@ Sample OK: 19 *C, 31 %
 ## Sensors
 
 - [x] DHT11, The [product](https://www.adafruit.com/product/386), [datasheet](https://cdn-shop.adafruit.com/datasheets/DHT11-chinese.pdf) and [example](https://github.com/winlinvip/SimpleDHT/tree/master/examples/DHT11Default), 1HZ sampling rate.
-- [ ] DHT22, The [product](https://www.adafruit.com/product/385) and [datasheet](https://cdn-shop.adafruit.com/datasheets/DHT22.pdf), 0.5Hz sampling rate.
+- [x] DHT22, The [product](https://www.adafruit.com/product/385), [datasheet](https://cdn-shop.adafruit.com/datasheets/DHT22.pdf) and [example](https://github.com/winlinvip/SimpleDHT/tree/master/examples/DHT22Default), 0.5Hz sampling rate.
 
 ## Examples
 
@@ -47,6 +47,7 @@ This library including the following examples:
 
 1. [adafruit/DHT-sensor-library](https://github.com/adafruit/DHT-sensor-library)
 1. [Arduino #4469: Add SimpleDHT library.](https://github.com/arduino/Arduino/issues/4469)
-1. [DHT11 Datasheet and protocol.](https://cdn-shop.adafruit.com/datasheets/DHT11-chinese.pdf)
+1. [DHT11 datasheet and protocol.](https://cdn-shop.adafruit.com/datasheets/DHT11-chinese.pdf)
+1. [DHT22 datasheet and protoocl.](https://cdn-shop.adafruit.com/datasheets/DHT22.pdf)
 
 Winlin 2016.1
