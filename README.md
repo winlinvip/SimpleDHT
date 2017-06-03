@@ -29,6 +29,11 @@ Sample OK: 19 *C, 31 %
 
 > Remark: For DHT11, no more than 1 Hz sampling rate (once every second).
 
+## Sensors
+
+- [x] DHT11, The [product](https://www.adafruit.com/product/386), [datasheet](https://cdn-shop.adafruit.com/datasheets/DHT11-chinese.pdf) and [example](https://github.com/winlinvip/SimpleDHT/tree/master/examples/DHT11Default), 1HZ sampling rate.
+- [ ] DHT22, The [product](https://www.adafruit.com/product/385) and [datasheet](https://cdn-shop.adafruit.com/datasheets/DHT22.pdf), 0.5Hz sampling rate.
+
 ## Examples
 
 This library including the following examples:
