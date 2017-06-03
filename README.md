@@ -5,7 +5,7 @@ Simple, Stable and Fast Arduino Temp & Humidity Sensors for
 
 1. Simple: Simple C++ code with lots of comments.
 1. Stable: Strictly follow the standard DHT protocol.
-1. Fast: Support 0.5HZ or 1HZ sampling rate.
+1. Fast: Support 1HZ sampling rate.
 
 ## Usage
 
@@ -33,13 +33,15 @@ Sample OK: 19 *C, 31 %
 
 This library including the following examples:
 
-1. DHT11Default: To sample the temperature and humidity.
-1. DHT11WithRawBits: To sample the temperature and humidity, output the 40 raw bits.
+1. [DHT11Default](https://github.com/winlinvip/SimpleDHT/tree/master/examples/DHT11Default): To sample the temperature and humidity.
+1. [DHT11WithRawBits](https://github.com/winlinvip/SimpleDHT/tree/master/examples/DHT11WithRawBits): To sample the temperature and humidity, output the 40 raw bits.
+1. [TwoSensorsDefault](https://github.com/winlinvip/SimpleDHT/tree/master/examples/TwoSensorsDefault): To sample two sensors.
 
 
 ## Links
 
 1. [adafruit/DHT-sensor-library](https://github.com/adafruit/DHT-sensor-library)
 1. [Arduino #4469: Add SimpleDHT library.](https://github.com/arduino/Arduino/issues/4469)
+1. [DHT11 Datasheet and protocol.](https://cdn-shop.adafruit.com/datasheets/DHT11-chinese.pdf)
 
 Winlin 2016.1
