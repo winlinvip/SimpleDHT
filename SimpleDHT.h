@@ -48,17 +48,17 @@ public:
     // Success.
     static int ErrSuccess;
     // Error to wait for start low signal.
-    static int ErrStartLow = 100;
+    static int ErrStartLow;
     // Error to wait for start high signal.
-    static int ErrStartHigh = 101;
+    static int ErrStartHigh;
     // Error to wait for data start low signal.
-    static int ErrDataLow = 102;
+    static int ErrDataLow;
     // Error to wait for data read signal.
-    static int ErrDataRead = 103;
+    static int ErrDataRead;
     // Error to wait for data EOF signal.
-    static int ErrDataEOF = 104;
+    static int ErrDataEOF;
     // Error to validate the checksum.
-    static int ErrDataChecksum = 105;
+    static int ErrDataChecksum;
 public:
     // to read from dht11.
     // @param pin the DHT11 pin.
