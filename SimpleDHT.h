@@ -27,6 +27,25 @@
 
 #include <Arduino.h>
 
+class SimpleDHT {
+public:
+    // Success.
+    static int ErrSuccess;
+    // Error to wait for start low signal.
+    static int ErrStartLow;
+    // Error to wait for start high signal.
+    static int ErrStartHigh;
+    // Error to wait for data start low signal.
+    static int ErrDataLow;
+    // Error to wait for data read signal.
+    static int ErrDataRead;
+    // Error to wait for data EOF signal.
+    static int ErrDataEOF;
+    // Error to validate the checksum.
+    static int ErrDataChecksum;
+};
+
+
 /*
     Simple DHT11
 
@@ -43,22 +62,7 @@
     https://cdn-shop.adafruit.com/datasheets/DHT11-chinese.pdf
 
 */
-class SimpleDHT11 {
-public:
-    // Success.
-    static int ErrSuccess;
-    // Error to wait for start low signal.
-    static int ErrStartLow;
-    // Error to wait for start high signal.
-    static int ErrStartHigh;
-    // Error to wait for data start low signal.
-    static int ErrDataLow;
-    // Error to wait for data read signal.
-    static int ErrDataRead;
-    // Error to wait for data EOF signal.
-    static int ErrDataEOF;
-    // Error to validate the checksum.
-    static int ErrDataChecksum;
+class SimpleDHT11 : public SimpleDHT {
 public:
     // to read from dht11.
     // @param pin the DHT11 pin.
@@ -68,7 +72,7 @@ public:
     // @remark the min delay for this method is 1s.
     // @return SimpleDHT11::ErrSuccess is success; otherwise, failed.
     int read(int pin, byte* ptemperature, byte* phumidity, byte pdata[40]);
-private:
+protected:
     // confirm the OUTPUT is level in us, 
     // for example, when DHT11 start sample, it will
     //    1. PULL LOW 80us, call confirm(pin, 80, LOW)
@@ -86,7 +90,7 @@ private:
     // @param data a byte[40] to read bits to 5bytes.
     // @return 0 success; otherwise, error.
     // @remark please use simple_dht11_read().
-    int sample(int pin, byte data[40]);
+    virtual int sample(int pin, byte data[40]);
     // parse the 40bits data to temperature and humidity.
     // @remark please use simple_dht11_read().
     int parse(byte data[40], byte* ptemperature, byte* phumidity);

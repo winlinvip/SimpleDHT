@@ -24,40 +24,13 @@ SOFTWARE.
 
 #include "SimpleDHT.h"
 
-int SimpleDHT11::ErrSuccess = 0;
-int SimpleDHT11::ErrStartLow = 100;
-int SimpleDHT11::ErrStartHigh = 101;
-int SimpleDHT11::ErrDataLow = 102;
-int SimpleDHT11::ErrDataRead = 103;
-int SimpleDHT11::ErrDataEOF = 104;
-int SimpleDHT11::ErrDataChecksum = 105;
-
-int SimpleDHT11::confirm(int pin, int us, byte level) {
-    // wait one more count to ensure.
-    int cnt = us / 10 + 1;
-
-    bool ok = false;
-    for (int i = 0; i < cnt; i++) {
-        if (digitalRead(pin) != level) {
-            ok = true;
-            break;
-        }
-        delayMicroseconds(10);
-    }
-
-    if (!ok) {
-        return -1;
-    }
-    return ErrSuccess;
-}
-
-byte SimpleDHT11::bits2byte(byte data[8]) {
-    byte v = 0;
-    for (int i = 0; i < 8; i++) {
-        v += data[i] << (7 - i);
-    }
-    return v;
-}
+int SimpleDHT::ErrSuccess = 0;
+int SimpleDHT::ErrStartLow = 100;
+int SimpleDHT::ErrStartHigh = 101;
+int SimpleDHT::ErrDataLow = 102;
+int SimpleDHT::ErrDataRead = 103;
+int SimpleDHT::ErrDataEOF = 104;
+int SimpleDHT::ErrDataChecksum = 105;
 
 int SimpleDHT11::sample(int pin, byte data[40]) {
     // empty output data.
@@ -120,6 +93,33 @@ int SimpleDHT11::sample(int pin, byte data[40]) {
     return ErrSuccess;
 }
 
+int SimpleDHT11::confirm(int pin, int us, byte level) {
+    // wait one more count to ensure.
+    int cnt = us / 10 + 1;
+
+    bool ok = false;
+    for (int i = 0; i < cnt; i++) {
+        if (digitalRead(pin) != level) {
+            ok = true;
+            break;
+        }
+        delayMicroseconds(10);
+    }
+
+    if (!ok) {
+        return -1;
+    }
+    return ErrSuccess;
+}
+
+byte SimpleDHT11::bits2byte(byte data[8]) {
+    byte v = 0;
+    for (int i = 0; i < 8; i++) {
+        v += data[i] << (7 - i);
+    }
+    return v;
+}
+
 int SimpleDHT11::parse(byte data[40], byte* ptemperature, byte* phumidity) {
     byte humidity = bits2byte(data);
     byte humidity2 = bits2byte(data + 8);
@@ -161,3 +161,4 @@ int SimpleDHT11::read(int pin, byte* ptemperature, byte* phumidity, byte pdata[4
 
     return ret;
 }
+

@@ -25,8 +25,9 @@ void loop() {
   // read without samples.
   byte temperature = 0;
   byte humidity = 0;
-  if (dht11.read(dataPinSensor1, &temperature, &humidity, NULL)) {
-    Serial.print("Communication error with Sensor 1");
+  int err = SimpleDHT::ErrSuccess;
+  if ((err = dht11.read(dataPinSensor1, &temperature, &humidity, NULL)) != SimpleDHT::ErrSuccess) {
+    Serial.print("Communication error with Sensor 1, err="); Serial.print(err);
     return;
   }
 
@@ -46,8 +47,8 @@ void loop() {
 
   byte temperature2 = 0;
   byte humidity2 = 0;
-  if (dht11.read(dataPinSensor2, &temperature2, &humidity2, NULL)) {
-    Serial.print("Communication error with sensor 2");
+  if ((err = dht11.read(dataPinSensor2, &temperature, &humidity, NULL)) != SimpleDHT::ErrSuccess) {
+    Serial.print("Communication error with Sensor 2, err="); Serial.print(err);
     return;
   }
 
