@@ -5,7 +5,7 @@
 ###########################################
 # Datatypes (KEYWORD1)
 ###########################################
-SimpleDHT11 KEYWORD1
+SimpleDHT11 SimpleDHT22 KEYWORD1
 
 ###########################################
 # Methods and Functions (KEYWORD2)

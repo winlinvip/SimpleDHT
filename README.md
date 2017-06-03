@@ -1,11 +1,11 @@
 # SimpleDHT
 
 Simple, Stable and Fast Arduino Temp & Humidity Sensors for 
-[DHT11 etc](http://learn.adafruit.com/dht).
+[DHT11 and DHT22](http://learn.adafruit.com/dht).
 
 1. Simple: Simple C++ code with lots of comments.
 1. Stable: Strictly follow the standard DHT protocol.
-1. Fast: Support 1HZ sampling rate.
+1. Fast: Support 0.5HZ(DHT22) or 1HZ(DHT11) sampling rate.
 
 ## Usage
 
@@ -29,6 +29,8 @@ Sample OK: 19 *C, 31 %
 
 > Remark: For DHT11, no more than 1 Hz sampling rate (once every second).
 
+> Remark: For DHT22, no more than 0.5 Hz sampling rate (once every 2 seconds).
+
 ## Sensors
 
 - [x] DHT11, The [product](https://www.adafruit.com/product/386), [datasheet](https://cdn-shop.adafruit.com/datasheets/DHT11-chinese.pdf) and [example](https://github.com/winlinvip/SimpleDHT/tree/master/examples/DHT11Default), 1HZ sampling rate.
@@ -41,6 +43,7 @@ This library including the following examples:
 1. [DHT11Default](https://github.com/winlinvip/SimpleDHT/tree/master/examples/DHT11Default): To sample the temperature and humidity.
 1. [DHT11WithRawBits](https://github.com/winlinvip/SimpleDHT/tree/master/examples/DHT11WithRawBits): To sample the temperature and humidity, output the 40 raw bits.
 1. [TwoSensorsDefault](https://github.com/winlinvip/SimpleDHT/tree/master/examples/TwoSensorsDefault): To sample two sensors.
+1. [DHT22Default](https://github.com/winlinvip/SimpleDHT/tree/master/examples/DHT22Default): To sample the temperature and humidity.
 
 
 ## Links
