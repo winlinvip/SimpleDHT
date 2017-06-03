@@ -19,8 +19,9 @@ void loop() {
   // read without samples.
   byte temperature = 0;
   byte humidity = 0;
-  if (dht11.read(pinDHT11, &temperature, &humidity, NULL)) {
-    Serial.print("Read DHT11 failed.");
+  int err = SimpleDHT11::ErrSuccess;
+  if ((err = dht11.read(pinDHT11, &temperature, &humidity, NULL)) != SimpleDHT11::ErrSuccess) {
+    Serial.print("Read DHT11 failed, err="); Serial.print(err);
     return;
   }
   

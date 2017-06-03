@@ -35,14 +35,30 @@
     The circuit:
     * VCC: 5V or 3V
     * GND: GND
-    * DATA: Digital ping, for example, 2.
+    * DATA: Digital ping, for instance 2.
 
     23 Jan 2016 By winlin <winlin@vip.126.com>
 
     https://github.com/winlinvip/SimpleDHT#usage
+    https://cdn-shop.adafruit.com/datasheets/DHT11-chinese.pdf
 
 */
 class SimpleDHT11 {
+public:
+    // Success.
+    static int ErrSuccess;
+    // Error to wait for start low signal.
+    static int ErrStartLow = 100;
+    // Error to wait for start high signal.
+    static int ErrStartHigh = 101;
+    // Error to wait for data start low signal.
+    static int ErrDataLow = 102;
+    // Error to wait for data read signal.
+    static int ErrDataRead = 103;
+    // Error to wait for data EOF signal.
+    static int ErrDataEOF = 104;
+    // Error to validate the checksum.
+    static int ErrDataChecksum = 105;
 public:
     // to read from dht11.
     // @param pin the DHT11 pin.
@@ -50,6 +66,7 @@ public:
     // @param phumidity output, NULL to ignore.
     // @param pdata output 40bits sample, NULL to ignore.
     // @remark the min delay for this method is 1s.
+    // @return SimpleDHT11::ErrSuccess is success; otherwise, failed.
     int read(int pin, byte* ptemperature, byte* phumidity, byte pdata[40]);
 private:
     // confirm the OUTPUT is level in us, 
