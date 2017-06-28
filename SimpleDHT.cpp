@@ -24,14 +24,6 @@ SOFTWARE.
 
 #include "SimpleDHT.h"
 
-int SimpleDHT::ErrSuccess = 0;
-int SimpleDHT::ErrStartLow = 100;
-int SimpleDHT::ErrStartHigh = 101;
-int SimpleDHT::ErrDataLow = 102;
-int SimpleDHT::ErrDataRead = 103;
-int SimpleDHT::ErrDataEOF = 104;
-int SimpleDHT::ErrDataChecksum = 105;
-
 int SimpleDHT::confirm(int pin, int us, byte level) {
     // wait one more count to ensure.
     int cnt = us / 10 + 1;
@@ -48,7 +40,7 @@ int SimpleDHT::confirm(int pin, int us, byte level) {
     if (!ok) {
         return -1;
     }
-    return ErrSuccess;
+    return SimpleDHTErrSuccess;
 }
 
 byte SimpleDHT::bits2byte(byte data[8]) {
@@ -67,24 +59,24 @@ int SimpleDHT::parse(byte data[40], byte* ptemperature, byte* phumidity) {
     byte check = bits2byte(data + 32);
     byte expect = humidity + humidity2 + temperature + temperature2;
     if (check != expect) {
-        return ErrDataChecksum;
+        return SimpleDHTErrDataChecksum;
     }
     *ptemperature = temperature;
     *phumidity = humidity;
-    return ErrSuccess;
+    return SimpleDHTErrSuccess;
 }
 
 int SimpleDHT::read(int pin, byte* ptemperature, byte* phumidity, byte pdata[40]) {
-    int ret = ErrSuccess;
+    int ret = SimpleDHTErrSuccess;
 
     byte data[40] = {0};
-    if ((ret = sample(pin, data)) != ErrSuccess) {
+    if ((ret = sample(pin, data)) != SimpleDHTErrSuccess) {
         return ret;
     }
 
     byte temperature = 0;
     byte humidity = 0;
-    if ((ret = parse(data, &temperature, &humidity)) != ErrSuccess) {
+    if ((ret = parse(data, &temperature, &humidity)) != SimpleDHTErrSuccess) {
         return ret;
     }
 
@@ -120,10 +112,10 @@ int SimpleDHT11::sample(int pin, byte data[40]) {
     //    1. PULL LOW 80us
     //    2. PULL HIGH 80us
     if (confirm(pin, 80, LOW)) {
-        return ErrStartLow;
+        return SimpleDHTErrStartLow;
     }
     if (confirm(pin, 80, HIGH)) {
-        return ErrStartHigh;
+        return SimpleDHTErrStartHigh;
     }
 
     // DHT11 data transmite:
@@ -132,7 +124,7 @@ int SimpleDHT11::sample(int pin, byte data[40]) {
     //    3. PULL HIGH 70us, bit(1)
     for (int j = 0; j < 40; j++) {
         if (confirm(pin, 50, LOW)) {
-            return ErrDataLow;
+            return SimpleDHTErrDataLow;
         }
 
         // read a bit, should never call method,
@@ -148,7 +140,7 @@ int SimpleDHT11::sample(int pin, byte data[40]) {
             delayMicroseconds(10);
         }
         if (!ok) {
-            return ErrDataRead;
+            return SimpleDHTErrDataRead;
         }
         data[j] = (tick > 3? 1:0);
     }
@@ -156,10 +148,10 @@ int SimpleDHT11::sample(int pin, byte data[40]) {
     // DHT11 EOF:
     //    1. PULL LOW 50us.
     if (confirm(pin, 50, LOW)) {
-        return ErrDataEOF;
+        return SimpleDHTErrDataEOF;
     }
 
-    return ErrSuccess;
+    return SimpleDHTErrSuccess;
 }
 
 int SimpleDHT22::sample(int pin, byte data[40]) {
@@ -181,10 +173,10 @@ int SimpleDHT22::sample(int pin, byte data[40]) {
     //    1. PULL LOW 80us
     //    2. PULL HIGH 80us
     if (confirm(pin, 80, LOW)) {
-        return ErrStartLow;
+        return SimpleDHTErrStartLow;
     }
     if (confirm(pin, 80, HIGH)) {
-        return ErrStartHigh;
+        return SimpleDHTErrStartHigh;
     }
 
     // DHT11 data transmite:
@@ -193,7 +185,7 @@ int SimpleDHT22::sample(int pin, byte data[40]) {
     //    3. PULL HIGH 70us, bit(1)
     for (int j = 0; j < 40; j++) {
         if (confirm(pin, 50, LOW)) {
-            return ErrDataLow;
+            return SimpleDHTErrDataLow;
         }
 
         // read a bit, should never call method,
@@ -209,7 +201,7 @@ int SimpleDHT22::sample(int pin, byte data[40]) {
             delayMicroseconds(10);
         }
         if (!ok) {
-            return ErrDataRead;
+            return SimpleDHTErrDataRead;
         }
         data[j] = (tick > 3? 1:0);
     }
@@ -217,9 +209,9 @@ int SimpleDHT22::sample(int pin, byte data[40]) {
     // DHT11 EOF:
     //    1. PULL LOW 50us.
     if (confirm(pin, 50, LOW)) {
-        return ErrDataEOF;
+        return SimpleDHTErrDataEOF;
     }
 
-    return ErrSuccess;
+    return SimpleDHTErrSuccess;
 }
 

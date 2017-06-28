@@ -27,22 +27,22 @@
 
 #include <Arduino.h>
 
+// Success.
+#define SimpleDHTErrSuccess 0
+// Error to wait for start low signal.
+#define SimpleDHTErrStartLow 100
+// Error to wait for start high signal.
+#define SimpleDHTErrStartHigh 101
+// Error to wait for data start low signal.
+#define SimpleDHTErrDataLow 102
+// Error to wait for data read signal.
+#define SimpleDHTErrDataRead 103
+// Error to wait for data EOF signal.
+#define SimpleDHTErrDataEOF 104
+// Error to validate the checksum.
+#define SimpleDHTErrDataChecksum 105
+
 class SimpleDHT {
-public:
-    // Success.
-    static int ErrSuccess;
-    // Error to wait for start low signal.
-    static int ErrStartLow;
-    // Error to wait for start high signal.
-    static int ErrStartHigh;
-    // Error to wait for data start low signal.
-    static int ErrDataLow;
-    // Error to wait for data read signal.
-    static int ErrDataRead;
-    // Error to wait for data EOF signal.
-    static int ErrDataEOF;
-    // Error to validate the checksum.
-    static int ErrDataChecksum;
 public:
     // to read from dht11.
     // @param pin the DHT11 pin.
@@ -50,7 +50,7 @@ public:
     // @param phumidity output, NULL to ignore.
     // @param pdata output 40bits sample, NULL to ignore.
     // @remark the min delay for this method is 1s.
-    // @return SimpleDHT11::ErrSuccess is success; otherwise, failed.
+    // @return SimpleDHTErrSuccess is success; otherwise, failed.
     int read(int pin, byte* ptemperature, byte* phumidity, byte pdata[40]);
 protected:
     // confirm the OUTPUT is level in us, 
@@ -75,7 +75,6 @@ protected:
     // @remark please use simple_dht11_read().
     int parse(byte data[40], byte* ptemperature, byte* phumidity);
 };
-
 
 /*
     Simple DHT11
