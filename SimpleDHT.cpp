@@ -97,7 +97,8 @@ int SimpleDHT11::sample(int pin, byte data[40]) {
     // empty output data.
     memset(data, 0, 40);
 
-    // notify DHT11 to start: 
+    // According to protocol: https://akizukidenshi.com/download/ds/aosong/DHT11.pdf
+    // notify DHT11 to start:
     //    1. PULL LOW 20ms.
     //    2. PULL HIGH 20-40us.
     //    3. SET TO INPUT.
@@ -158,20 +159,21 @@ int SimpleDHT22::sample(int pin, byte data[40]) {
     // empty output data.
     memset(data, 0, 40);
 
+    // According to protocol: http://akizukidenshi.com/download/ds/aosong/AM2302.pdf
     // notify DHT11 to start: 
-    //    1. PULL LOW 500us+ or 1ms+.
-    //    2. PULL HIGH 20-40us.
+    //    1. T(be), PULL LOW 1ms(0.8-20ms).
+    //    2. T(go), PULL HIGH 30us(20-200us).
     //    3. SET TO INPUT.
     pinMode(pin, OUTPUT);
     digitalWrite(pin, LOW);
-    delay(1);
+    delayMicroseconds(1000);
     digitalWrite(pin, HIGH);
     pinMode(pin, INPUT);
     delayMicroseconds(30);
 
     // DHT11 starting:
-    //    1. PULL LOW 80us
-    //    2. PULL HIGH 80us
+    //    1. T(rel), PULL LOW 80us(75-85us)
+    //    2. T(reh), PULL HIGH 80us(75-85us)
     if (confirm(pin, 80, LOW)) {
         return SimpleDHTErrStartLow;
     }
@@ -180,9 +182,9 @@ int SimpleDHT22::sample(int pin, byte data[40]) {
     }
 
     // DHT11 data transmite:
-    //    1. 1bit start, PULL LOW 50us
-    //    2. PULL HIGH 26-28us, bit(0)
-    //    3. PULL HIGH 70us, bit(1)
+    //    1. T(LOW), 1bit start, PULL LOW 50us(48-55us)
+    //    2. T(H0), PULL HIGH 26us(22-30us), bit(0)
+    //    3. T(H1), PULL HIGH 70us(68-75us), bit(1)
     for (int j = 0; j < 40; j++) {
         if (confirm(pin, 50, LOW)) {
             return SimpleDHTErrDataLow;
@@ -207,7 +209,7 @@ int SimpleDHT22::sample(int pin, byte data[40]) {
     }
 
     // DHT11 EOF:
-    //    1. PULL LOW 50us.
+    //    1. T(en), PULL LOW 50us(45-55us).
     if (confirm(pin, 50, LOW)) {
         return SimpleDHTErrDataEOF;
     }

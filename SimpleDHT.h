@@ -89,6 +89,7 @@ protected:
     23 Jan 2016 By winlin <winlin@vip.126.com>
 
     https://github.com/winlinvip/SimpleDHT#usage
+    https://akizukidenshi.com/download/ds/aosong/DHT11.pdf
     https://cdn-shop.adafruit.com/datasheets/DHT11-chinese.pdf
 
 */
@@ -110,6 +111,7 @@ protected:
     3 Jun 2017 By winlin <winlin@vip.126.com>
 
     https://github.com/winlinvip/SimpleDHT#usage
+    http://akizukidenshi.com/download/ds/aosong/AM2302.pdf
     https://cdn-shop.adafruit.com/datasheets/DHT22.pdf
 
 */
