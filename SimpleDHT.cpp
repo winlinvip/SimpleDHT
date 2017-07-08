@@ -51,22 +51,44 @@ byte SimpleDHT::bits2byte(byte data[8]) {
     return v;
 }
 
-int SimpleDHT::parse(byte data[40], byte* ptemperature, byte* phumidity) {
-    byte humidity = bits2byte(data);
-    byte humidity2 = bits2byte(data + 8);
-    byte temperature = bits2byte(data + 16);
-    byte temperature2 = bits2byte(data + 24);
+int SimpleDHT::parse(byte data[40], short* ptemperature, short* phumidity) {
+    short humidity = bits2byte(data);
+    short humidity2 = bits2byte(data + 8);
+    short temperature = bits2byte(data + 16);
+    short temperature2 = bits2byte(data + 24);
     byte check = bits2byte(data + 32);
-    byte expect = humidity + humidity2 + temperature + temperature2;
+    byte expect = (byte)humidity + (byte)humidity2 + (byte)temperature + (byte)temperature2;
     if (check != expect) {
         return SimpleDHTErrDataChecksum;
     }
-    *ptemperature = temperature;
-    *phumidity = humidity;
+
+    *ptemperature = temperature<<8 | temperature2;
+    *phumidity = humidity<<8 | humidity2;
+
     return SimpleDHTErrSuccess;
 }
 
 int SimpleDHT::read(int pin, byte* ptemperature, byte* phumidity, byte pdata[40]) {
+    int ret = SimpleDHTErrSuccess;
+
+    float temperature = 0;
+    float humidity = 0;
+    if ((read2(pin, &temperature, &humidity, pdata)) != SimpleDHTErrSuccess) {
+        return ret;
+    }
+
+    if (ptemperature) {
+        *ptemperature = (byte)(int)temperature;
+    }
+
+    if (phumidity) {
+        *phumidity = (byte)(int)humidity;
+    }
+
+    return ret;
+}
+
+int SimpleDHT11::read2(int pin, float* ptemperature, float* phumidity, byte pdata[40]) {
     int ret = SimpleDHTErrSuccess;
 
     byte data[40] = {0};
@@ -74,8 +96,8 @@ int SimpleDHT::read(int pin, byte* ptemperature, byte* phumidity, byte pdata[40]
         return ret;
     }
 
-    byte temperature = 0;
-    byte humidity = 0;
+    short temperature = 0;
+    short humidity = 0;
     if ((ret = parse(data, &temperature, &humidity)) != SimpleDHTErrSuccess) {
         return ret;
     }
@@ -84,10 +106,10 @@ int SimpleDHT::read(int pin, byte* ptemperature, byte* phumidity, byte pdata[40]
         memcpy(pdata, data, 40);
     }
     if (ptemperature) {
-        *ptemperature = temperature;
+        *ptemperature = (int)(temperature>>8);
     }
     if (phumidity) {
-        *phumidity = humidity;
+        *phumidity = (int)(humidity>>8);
     }
 
     return ret;
@@ -153,6 +175,33 @@ int SimpleDHT11::sample(int pin, byte data[40]) {
     }
 
     return SimpleDHTErrSuccess;
+}
+
+int SimpleDHT22::read2(int pin, float* ptemperature, float* phumidity, byte pdata[40]) {
+    int ret = SimpleDHTErrSuccess;
+
+    byte data[40] = {0};
+    if ((ret = sample(pin, data)) != SimpleDHTErrSuccess) {
+        return ret;
+    }
+
+    short temperature = 0;
+    short humidity = 0;
+    if ((ret = parse(data, &temperature, &humidity)) != SimpleDHTErrSuccess) {
+        return ret;
+    }
+
+    if (pdata) {
+        memcpy(pdata, data, 40);
+    }
+    if (ptemperature) {
+        *ptemperature = (float)temperature / 10.0;
+    }
+    if (phumidity) {
+        *phumidity = (float)humidity / 10.0;
+    }
+
+    return ret;
 }
 
 int SimpleDHT22::sample(int pin, byte data[40]) {
