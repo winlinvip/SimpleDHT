@@ -14,7 +14,7 @@ void setup() {
 void loop() {
   // start working...
   Serial.println("=================================");
-  Serial.println("Sample DHT11...");
+  Serial.println("Sample DHT11 with RAW bits...");
   
   // read with raw sample data.
   byte temperature = 0;
@@ -37,7 +37,7 @@ void loop() {
   
   Serial.print("Sample OK: ");
   Serial.print((int)temperature); Serial.print(" *C, ");
-  Serial.print((int)humidity); Serial.println(" %");
+  Serial.print((int)humidity); Serial.println(" H");
   
   // DHT11 sampling rate is 1HZ.
   delay(1000);

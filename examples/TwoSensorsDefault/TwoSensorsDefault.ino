@@ -12,7 +12,7 @@ int dataPinSensor2 = 4;
 SimpleDHT11 dht11;
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
 }
 
 void loop() {
@@ -37,7 +37,7 @@ void loop() {
   Serial.print("Sample OK: ");
   Serial.print((int)temperature); Serial.print(" *C, "); 
   Serial.print((int)f); Serial.print(" *F, "); 
-  Serial.print((int)humidity); Serial.println(" % humidity");
+  Serial.print((int)humidity); Serial.println(" H humidity");
 
 
   // Reading data from sensor 2...
@@ -59,7 +59,7 @@ void loop() {
   Serial.print("Sample OK: ");
   Serial.print((int)temperature); Serial.print(" *C, "); 
   Serial.print((int)fb); Serial.print(" *F, "); 
-  Serial.print((int)humidity2); Serial.println(" % humidity");
+  Serial.print((int)humidity2); Serial.println(" H humidity");
 
 
   

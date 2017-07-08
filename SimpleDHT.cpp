@@ -24,6 +24,26 @@ SOFTWARE.
 
 #include "SimpleDHT.h"
 
+int SimpleDHT::read(int pin, byte* ptemperature, byte* phumidity, byte pdata[40]) {
+    int ret = SimpleDHTErrSuccess;
+
+    float temperature = 0;
+    float humidity = 0;
+    if ((read2(pin, &temperature, &humidity, pdata)) != SimpleDHTErrSuccess) {
+        return ret;
+    }
+
+    if (ptemperature) {
+        *ptemperature = (byte)(int)temperature;
+    }
+
+    if (phumidity) {
+        *phumidity = (byte)(int)humidity;
+    }
+
+    return ret;
+}
+
 int SimpleDHT::confirm(int pin, int us, byte level) {
     // wait one more count to ensure.
     int cnt = us / 10 + 1;
@@ -51,22 +71,24 @@ byte SimpleDHT::bits2byte(byte data[8]) {
     return v;
 }
 
-int SimpleDHT::parse(byte data[40], byte* ptemperature, byte* phumidity) {
-    byte humidity = bits2byte(data);
-    byte humidity2 = bits2byte(data + 8);
-    byte temperature = bits2byte(data + 16);
-    byte temperature2 = bits2byte(data + 24);
+int SimpleDHT::parse(byte data[40], short* ptemperature, short* phumidity) {
+    short humidity = bits2byte(data);
+    short humidity2 = bits2byte(data + 8);
+    short temperature = bits2byte(data + 16);
+    short temperature2 = bits2byte(data + 24);
     byte check = bits2byte(data + 32);
-    byte expect = humidity + humidity2 + temperature + temperature2;
+    byte expect = (byte)humidity + (byte)humidity2 + (byte)temperature + (byte)temperature2;
     if (check != expect) {
         return SimpleDHTErrDataChecksum;
     }
-    *ptemperature = temperature;
-    *phumidity = humidity;
+
+    *ptemperature = temperature<<8 | temperature2;
+    *phumidity = humidity<<8 | humidity2;
+
     return SimpleDHTErrSuccess;
 }
 
-int SimpleDHT::read(int pin, byte* ptemperature, byte* phumidity, byte pdata[40]) {
+int SimpleDHT11::read2(int pin, float* ptemperature, float* phumidity, byte pdata[40]) {
     int ret = SimpleDHTErrSuccess;
 
     byte data[40] = {0};
@@ -74,8 +96,8 @@ int SimpleDHT::read(int pin, byte* ptemperature, byte* phumidity, byte pdata[40]
         return ret;
     }
 
-    byte temperature = 0;
-    byte humidity = 0;
+    short temperature = 0;
+    short humidity = 0;
     if ((ret = parse(data, &temperature, &humidity)) != SimpleDHTErrSuccess) {
         return ret;
     }
@@ -84,10 +106,10 @@ int SimpleDHT::read(int pin, byte* ptemperature, byte* phumidity, byte pdata[40]
         memcpy(pdata, data, 40);
     }
     if (ptemperature) {
-        *ptemperature = temperature;
+        *ptemperature = (int)(temperature>>8);
     }
     if (phumidity) {
-        *phumidity = humidity;
+        *phumidity = (int)(humidity>>8);
     }
 
     return ret;
@@ -97,7 +119,8 @@ int SimpleDHT11::sample(int pin, byte data[40]) {
     // empty output data.
     memset(data, 0, 40);
 
-    // notify DHT11 to start: 
+    // According to protocol: https://akizukidenshi.com/download/ds/aosong/DHT11.pdf
+    // notify DHT11 to start:
     //    1. PULL LOW 20ms.
     //    2. PULL HIGH 20-40us.
     //    3. SET TO INPUT.
@@ -154,24 +177,52 @@ int SimpleDHT11::sample(int pin, byte data[40]) {
     return SimpleDHTErrSuccess;
 }
 
+int SimpleDHT22::read2(int pin, float* ptemperature, float* phumidity, byte pdata[40]) {
+    int ret = SimpleDHTErrSuccess;
+
+    byte data[40] = {0};
+    if ((ret = sample(pin, data)) != SimpleDHTErrSuccess) {
+        return ret;
+    }
+
+    short temperature = 0;
+    short humidity = 0;
+    if ((ret = parse(data, &temperature, &humidity)) != SimpleDHTErrSuccess) {
+        return ret;
+    }
+
+    if (pdata) {
+        memcpy(pdata, data, 40);
+    }
+    if (ptemperature) {
+        *ptemperature = (float)temperature / 10.0;
+    }
+    if (phumidity) {
+        *phumidity = (float)humidity / 10.0;
+    }
+
+    return ret;
+}
+
 int SimpleDHT22::sample(int pin, byte data[40]) {
     // empty output data.
     memset(data, 0, 40);
 
+    // According to protocol: http://akizukidenshi.com/download/ds/aosong/AM2302.pdf
     // notify DHT11 to start: 
-    //    1. PULL LOW 500us+ or 1ms+.
-    //    2. PULL HIGH 20-40us.
+    //    1. T(be), PULL LOW 1ms(0.8-20ms).
+    //    2. T(go), PULL HIGH 30us(20-200us).
     //    3. SET TO INPUT.
     pinMode(pin, OUTPUT);
     digitalWrite(pin, LOW);
-    delay(1);
+    delayMicroseconds(1000);
     digitalWrite(pin, HIGH);
     pinMode(pin, INPUT);
     delayMicroseconds(30);
 
     // DHT11 starting:
-    //    1. PULL LOW 80us
-    //    2. PULL HIGH 80us
+    //    1. T(rel), PULL LOW 80us(75-85us)
+    //    2. T(reh), PULL HIGH 80us(75-85us)
     if (confirm(pin, 80, LOW)) {
         return SimpleDHTErrStartLow;
     }
@@ -180,9 +231,9 @@ int SimpleDHT22::sample(int pin, byte data[40]) {
     }
 
     // DHT11 data transmite:
-    //    1. 1bit start, PULL LOW 50us
-    //    2. PULL HIGH 26-28us, bit(0)
-    //    3. PULL HIGH 70us, bit(1)
+    //    1. T(LOW), 1bit start, PULL LOW 50us(48-55us)
+    //    2. T(H0), PULL HIGH 26us(22-30us), bit(0)
+    //    3. T(H1), PULL HIGH 70us(68-75us), bit(1)
     for (int j = 0; j < 40; j++) {
         if (confirm(pin, 50, LOW)) {
             return SimpleDHTErrDataLow;
@@ -207,7 +258,7 @@ int SimpleDHT22::sample(int pin, byte data[40]) {
     }
 
     // DHT11 EOF:
-    //    1. PULL LOW 50us.
+    //    1. T(en), PULL LOW 50us(45-55us).
     if (confirm(pin, 50, LOW)) {
         return SimpleDHTErrDataEOF;
     }

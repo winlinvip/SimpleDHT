@@ -33,8 +33,8 @@ Sample OK: 19 *C, 31 %
 
 ## Sensors
 
-- [x] DHT11, The [product](https://www.adafruit.com/product/386), [datasheet](https://cdn-shop.adafruit.com/datasheets/DHT11-chinese.pdf) and [example](https://github.com/winlinvip/SimpleDHT/tree/master/examples/DHT11Default), 1HZ sampling rate.
-- [x] DHT22, The [product](https://www.adafruit.com/product/385), [datasheet](https://cdn-shop.adafruit.com/datasheets/DHT22.pdf) and [example](https://github.com/winlinvip/SimpleDHT/tree/master/examples/DHT22Default), 0.5Hz sampling rate.
+- [x] DHT11, The [product](https://www.adafruit.com/product/386), [datasheet](https://akizukidenshi.com/download/ds/aosong/DHT11.pdf) and [example](https://github.com/winlinvip/SimpleDHT/tree/master/examples/DHT11Default), 1HZ sampling rate.
+- [x] DHT22, The [product](https://www.adafruit.com/product/385), [datasheet](http://akizukidenshi.com/download/ds/aosong/AM2302.pdf) and [example](https://github.com/winlinvip/SimpleDHT/tree/master/examples/DHT22Default), 0.5Hz sampling rate.
 
 ## Examples
 
