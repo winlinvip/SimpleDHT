@@ -12,7 +12,7 @@ int dataPinSensor2 = 4;
 SimpleDHT11 dht11;
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
 }
 
 void loop() {
