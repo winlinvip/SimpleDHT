@@ -24,6 +24,26 @@ SOFTWARE.
 
 #include "SimpleDHT.h"
 
+int SimpleDHT::read(int pin, byte* ptemperature, byte* phumidity, byte pdata[40]) {
+    int ret = SimpleDHTErrSuccess;
+
+    float temperature = 0;
+    float humidity = 0;
+    if ((read2(pin, &temperature, &humidity, pdata)) != SimpleDHTErrSuccess) {
+        return ret;
+    }
+
+    if (ptemperature) {
+        *ptemperature = (byte)(int)temperature;
+    }
+
+    if (phumidity) {
+        *phumidity = (byte)(int)humidity;
+    }
+
+    return ret;
+}
+
 int SimpleDHT::confirm(int pin, int us, byte level) {
     // wait one more count to ensure.
     int cnt = us / 10 + 1;
@@ -66,26 +86,6 @@ int SimpleDHT::parse(byte data[40], short* ptemperature, short* phumidity) {
     *phumidity = humidity<<8 | humidity2;
 
     return SimpleDHTErrSuccess;
-}
-
-int SimpleDHT::read(int pin, byte* ptemperature, byte* phumidity, byte pdata[40]) {
-    int ret = SimpleDHTErrSuccess;
-
-    float temperature = 0;
-    float humidity = 0;
-    if ((read2(pin, &temperature, &humidity, pdata)) != SimpleDHTErrSuccess) {
-        return ret;
-    }
-
-    if (ptemperature) {
-        *ptemperature = (byte)(int)temperature;
-    }
-
-    if (phumidity) {
-        *phumidity = (byte)(int)humidity;
-    }
-
-    return ret;
 }
 
 int SimpleDHT11::read2(int pin, float* ptemperature, float* phumidity, byte pdata[40]) {
