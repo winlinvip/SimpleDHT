@@ -40,10 +40,12 @@ Sample OK: 19 *C, 31 %
 
 This library including the following examples:
 
-1. [DHT11Default](https://github.com/winlinvip/SimpleDHT/tree/master/examples/DHT11Default): To sample the temperature and humidity.
-1. [DHT11WithRawBits](https://github.com/winlinvip/SimpleDHT/tree/master/examples/DHT11WithRawBits): To sample the temperature and humidity, output the 40 raw bits.
-1. [TwoSensorsDefault](https://github.com/winlinvip/SimpleDHT/tree/master/examples/TwoSensorsDefault): To sample two sensors.
-1. [DHT22Default](https://github.com/winlinvip/SimpleDHT/tree/master/examples/DHT22Default): To sample the temperature and humidity.
+1. [DHT11Default](https://github.com/winlinvip/SimpleDHT/tree/master/examples/DHT11Default): Use DHT11 to sample.
+1. [DHT11WithRawBits](https://github.com/winlinvip/SimpleDHT/tree/master/examples/DHT11WithRawBits): Use DHT11 to sample and get the 40bits RAW data.
+1. [TwoSensorsDefault](https://github.com/winlinvip/SimpleDHT/tree/master/examples/TwoSensorsDefault): Use two DHT11 to sample.
+1. [DHT22Default](https://github.com/winlinvip/SimpleDHT/tree/master/examples/DHT22Default): Use DHT22 to sample.
+1. [DHT22WithRawBits](https://github.com/winlinvip/SimpleDHT/tree/master/examples/DHT22WithRawBits): Use DHT22 to sample and get the 40bits RAW data.
+1. [DHT22Integer](https://github.com/winlinvip/SimpleDHT/tree/master/examples/DHT22Integer): Use DHT22 to sample and ignore the fractional data.
 
 
 ## Links
