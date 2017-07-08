@@ -20,10 +20,10 @@ To use this library:
 ```
 =================================
 Sample DHT11...
-Sample OK: 19 *C, 31 %
+Sample OK: 19 *C, 31 H
 =================================
 Sample DHT11...
-Sample OK: 19 *C, 31 %
+Sample OK: 19 *C, 31 H
 =================================
 ```
 
