@@ -21,7 +21,7 @@ void loop() {
   byte humidity = 0;
   int err = SimpleDHTErrSuccess;
   if ((err = dht22.read(pinDHT22, &temperature, &humidity, NULL)) != SimpleDHTErrSuccess) {
-    Serial.print("Read DHT22 failed, err="); Serial.print(err);
+    Serial.print("Read DHT22 failed, err="); Serial.println(err);delay(2000);
     return;
   }
   
@@ -30,5 +30,5 @@ void loop() {
   Serial.print((int)humidity); Serial.println(" RH%");
   
   // DHT22 sampling rate is 0.5HZ.
-  delay(2000);
+  delay(2500);
 }

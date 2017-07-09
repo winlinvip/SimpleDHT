@@ -27,7 +27,7 @@ void loop() {
   byte humidity = 0;
   int err = SimpleDHTErrSuccess;
   if ((err = dht11.read(dataPinSensor1, &temperature, &humidity, NULL)) != SimpleDHTErrSuccess) {
-    Serial.print("Communication error with Sensor 1, err="); Serial.print(err);
+    Serial.print("Communication error with Sensor 1, err="); Serial.println(err);delay(1000);
     return;
   }
 
@@ -48,7 +48,7 @@ void loop() {
   byte temperature2 = 0;
   byte humidity2 = 0;
   if ((err = dht11.read(dataPinSensor2, &temperature, &humidity, NULL)) != SimpleDHTErrSuccess) {
-    Serial.print("Communication error with Sensor 2, err="); Serial.print(err);
+    Serial.print("Communication error with Sensor 2, err="); Serial.println(err);delay(1000);
     return;
   }
 

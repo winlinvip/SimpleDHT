@@ -41,6 +41,8 @@
 #define SimpleDHTErrDataEOF 104
 // Error to validate the checksum.
 #define SimpleDHTErrDataChecksum 105
+// Error when temperature and humidity are zero, it shouldn't happen.
+#define SimpleDHTErrZeroSamples 106
 
 class SimpleDHT {
 public:
@@ -51,7 +53,7 @@ public:
     //      For DHT11, in H, such as 35H.
     //      For DHT22, in RH%, such as 53%RH.
     // @param pdata output 40bits sample, NULL to ignore.
-    // @remark the min delay for this method is 1s.
+    // @remark the min delay for this method is 1s(DHT11) or 2s(DHT22).
     // @return SimpleDHTErrSuccess is success; otherwise, failed.
     virtual int read(int pin, byte* ptemperature, byte* phumidity, byte pdata[40]);
     // to get a more accurate data.

@@ -29,7 +29,7 @@ int SimpleDHT::read(int pin, byte* ptemperature, byte* phumidity, byte pdata[40]
 
     float temperature = 0;
     float humidity = 0;
-    if ((read2(pin, &temperature, &humidity, pdata)) != SimpleDHTErrSuccess) {
+    if ((ret = read2(pin, &temperature, &humidity, pdata)) != SimpleDHTErrSuccess) {
         return ret;
     }
 
@@ -45,16 +45,19 @@ int SimpleDHT::read(int pin, byte* ptemperature, byte* phumidity, byte pdata[40]
 }
 
 int SimpleDHT::confirm(int pin, int us, byte level) {
-    // wait one more count to ensure.
-    int cnt = us / 10 + 1;
+    int cnt = us / 10;
+    if ((us % 10) > 0) {
+        cnt++;
+    }
 
     bool ok = false;
     for (int i = 0; i < cnt; i++) {
+        delayMicroseconds(10);
+
         if (digitalRead(pin) != level) {
             ok = true;
             break;
         }
-        delayMicroseconds(10);
     }
 
     if (!ok) {
@@ -112,6 +115,11 @@ int SimpleDHT11::read2(int pin, float* ptemperature, float* phumidity, byte pdat
         *phumidity = (int)(humidity>>8);
     }
 
+    // For example, when remove the data line, it will be success with zero data.
+    if (temperature == 0 && humidity == 0) {
+        return SimpleDHTErrZeroSamples;
+    }
+
     return ret;
 }
 
@@ -130,7 +138,6 @@ int SimpleDHT11::sample(int pin, byte data[40]) {
     digitalWrite(pin, HIGH);
     pinMode(pin, INPUT);
     delayMicroseconds(30);
-
     // DHT11 starting:
     //    1. PULL LOW 80us
     //    2. PULL HIGH 80us
@@ -211,31 +218,31 @@ int SimpleDHT22::sample(int pin, byte data[40]) {
     // According to protocol: http://akizukidenshi.com/download/ds/aosong/AM2302.pdf
     // notify DHT11 to start: 
     //    1. T(be), PULL LOW 1ms(0.8-20ms).
-    //    2. T(go), PULL HIGH 30us(20-200us).
+    //    2. T(go), PULL HIGH 30us(20-200us), use 40us.
     //    3. SET TO INPUT.
     pinMode(pin, OUTPUT);
     digitalWrite(pin, LOW);
     delayMicroseconds(1000);
     digitalWrite(pin, HIGH);
     pinMode(pin, INPUT);
-    delayMicroseconds(30);
+    delayMicroseconds(40);
 
     // DHT11 starting:
-    //    1. T(rel), PULL LOW 80us(75-85us)
-    //    2. T(reh), PULL HIGH 80us(75-85us)
-    if (confirm(pin, 80, LOW)) {
+    //    1. T(rel), PULL LOW 80us(75-85us), use 90us.
+    //    2. T(reh), PULL HIGH 80us(75-85us), use 90us.
+    if (confirm(pin, 90, LOW)) {
         return SimpleDHTErrStartLow;
     }
-    if (confirm(pin, 80, HIGH)) {
+    if (confirm(pin, 90, HIGH)) {
         return SimpleDHTErrStartHigh;
     }
 
     // DHT11 data transmite:
-    //    1. T(LOW), 1bit start, PULL LOW 50us(48-55us)
+    //    1. T(LOW), 1bit start, PULL LOW 50us(48-55us), use 60us.
     //    2. T(H0), PULL HIGH 26us(22-30us), bit(0)
     //    3. T(H1), PULL HIGH 70us(68-75us), bit(1)
     for (int j = 0; j < 40; j++) {
-        if (confirm(pin, 50, LOW)) {
+        if (confirm(pin, 60, LOW)) {
             return SimpleDHTErrDataLow;
         }
 
@@ -258,8 +265,8 @@ int SimpleDHT22::sample(int pin, byte data[40]) {
     }
 
     // DHT11 EOF:
-    //    1. T(en), PULL LOW 50us(45-55us).
-    if (confirm(pin, 50, LOW)) {
+    //    1. T(en), PULL LOW 50us(45-55us), use 60us.
+    if (confirm(pin, 60, LOW)) {
         return SimpleDHTErrDataEOF;
     }
 

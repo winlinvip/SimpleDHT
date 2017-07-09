@@ -42,17 +42,18 @@ This library including the following examples:
 
 1. [DHT11Default](https://github.com/winlinvip/SimpleDHT/tree/master/examples/DHT11Default): Use DHT11 to sample.
 1. [DHT11WithRawBits](https://github.com/winlinvip/SimpleDHT/tree/master/examples/DHT11WithRawBits): Use DHT11 to sample and get the 40bits RAW data.
-1. [TwoSensorsDefault](https://github.com/winlinvip/SimpleDHT/tree/master/examples/TwoSensorsDefault): Use two DHT11 to sample.
+1. [DHT11ErrCount](https://github.com/winlinvip/SimpleDHT/tree/master/examples/DHT11ErrCount): Use DHT11 to sample and stat the success rate.
 1. [DHT22Default](https://github.com/winlinvip/SimpleDHT/tree/master/examples/DHT22Default): Use DHT22 to sample.
 1. [DHT22WithRawBits](https://github.com/winlinvip/SimpleDHT/tree/master/examples/DHT22WithRawBits): Use DHT22 to sample and get the 40bits RAW data.
 1. [DHT22Integer](https://github.com/winlinvip/SimpleDHT/tree/master/examples/DHT22Integer): Use DHT22 to sample and ignore the fractional data.
-
+1. [DHT22ErrCount](https://github.com/winlinvip/SimpleDHT/tree/master/examples/DHT22ErrCount): Use DHT22 to sample and stat the success rate.
+1. [TwoSensorsDefault](https://github.com/winlinvip/SimpleDHT/tree/master/examples/TwoSensorsDefault): Use two DHT11 to sample.
 
 ## Links
 
 1. [adafruit/DHT-sensor-library](https://github.com/adafruit/DHT-sensor-library)
 1. [Arduino #4469: Add SimpleDHT library.](https://github.com/arduino/Arduino/issues/4469)
-1. [DHT11 datasheet and protocol.](https://cdn-shop.adafruit.com/datasheets/DHT11-chinese.pdf)
-1. [DHT22 datasheet and protoocl.](https://cdn-shop.adafruit.com/datasheets/DHT22.pdf)
+1. [DHT11 datasheet and protocol.](https://akizukidenshi.com/download/ds/aosong/DHT11.pdf)
+1. [DHT22 datasheet and protoocl.](http://akizukidenshi.com/download/ds/aosong/AM2302.pdf)
 
 Winlin 2016.1
