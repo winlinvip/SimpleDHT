@@ -25,12 +25,12 @@ void loop() {
     byte humidity = 0;
     int err = SimpleDHTErrSuccess;
     if ((err = dht11.read(pinDHT11, &temperature, &humidity, NULL)) != SimpleDHTErrSuccess) {
-      Serial.print("Read DHT11 failed, err="); Serial.println(err);err_cnt++;
+      Serial.print("DHT11 read failed "); Serial.print(err); err_cnt++;
+    } else {
+      Serial.print("DHT11, ");
+      Serial.print((int)temperature); Serial.print(" *C, ");
+      Serial.print((int)humidity); Serial.print(" H");
     }
-
-    Serial.print("DHT11, ");
-    Serial.print((int)temperature); Serial.print(" *C, ");
-    Serial.print((int)humidity); Serial.print(" H");
     Serial.print(", total: "); Serial.print(cnt);
     Serial.print(", err: "); Serial.print(err_cnt);
     Serial.print(", success rate: "); Serial.print((cnt - err_cnt) * 100.0 / (float)cnt); Serial.println("%");
