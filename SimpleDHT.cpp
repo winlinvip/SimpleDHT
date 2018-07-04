@@ -68,7 +68,7 @@ int SimpleDHT::confirm(int us, byte level) {
 }
 
 
-int SimpleDHT::levelTime( byte level, int interval = 10 )
+int SimpleDHT::levelTime( byte level, int interval )
 {
     unsigned long time_start = micros(),
         time_end, time;
