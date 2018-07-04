@@ -57,6 +57,9 @@ protected:
 #endif
 
 public:
+
+    SimpleDHT(){}
+
     // @param pin the DHT11 pin.
     SimpleDHT( int pin ) {
         setPin( pin );
@@ -165,6 +168,8 @@ protected:
 */
 class SimpleDHT11 : public SimpleDHT {
 public:
+    SimpleDHT11() {}
+
     SimpleDHT11(int pin)
         : SimpleDHT (pin)
     {}
@@ -199,6 +204,7 @@ protected:
 */
 class SimpleDHT22 : public SimpleDHT {
 public:
+    SimpleDHT22() {}
     SimpleDHT22(int pin)
         : SimpleDHT (pin)
     {}
