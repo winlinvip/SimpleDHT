@@ -190,7 +190,7 @@ int SimpleDHT11::sample(byte data[40]) {
     //  [2] https://www.mouser.com/ds/2/758/DHT11-Technical-Data-Sheet-Translated-Version-1143054.pdf
     // - original values specified in code
     // - since they were not working (MCU-dependent timing?), replace in code with
-    //   _working_ values based on measurements done with levelTime()
+    //   _working_ values based on measurements done with levelTimePrecise()
     pinMode(pin, OUTPUT);
     digitalWrite(pin, HIGH);
     delay(500);
@@ -206,18 +206,14 @@ int SimpleDHT11::sample(byte data[40]) {
     // DHT11 starting:
     //    1. PULL LOW 80us
     //    2. PULL HIGH 80us
-    int t = levelTime( LOW );     // 1.
-    //if (confirm(pin, 80, LOW)) {
-    if ( t < 60 ) {                      // specs [2]: 80us
+    int t = levelTime( LOW );          // 1.
+    if ( t < 60 ) {                    // specs [2]: 80us
         return SimpleDHTErrStartLow;
-        //return (t == 0 ? 1234 : t);  // DEBUG
     }
 
-    t = levelTime( HIGH );        // 2.
-    //if (confirm(pin, 80, HIGH)) {
+    t = levelTime( HIGH );             // 2.
     if ( t < 70 ) {                    // specs [2]: 80us
         return SimpleDHTErrStartHigh;
-        //return (t == 0 ? 1234 : t);  // DEBUG
     }
 
     // DHT11 data transmite:
@@ -227,27 +223,24 @@ int SimpleDHT11::sample(byte data[40]) {
     //         - 70us, bit(1)
     for (int j = 0; j < 40; j++)
     {
-          t = levelTime( LOW, 10 );     // 1.
-          //if (confirm(pin, 50, LOW)) {
+          t = levelTime( LOW, 10 );          // 1.
           if ( t < 32 ) {                    // specs says: 50us
-              //return SimpleDHTErrDataLow;
-              return (t == 0 ? 1234 : t);  // DEBUG
+              return SimpleDHTErrDataLow;
           }
 
           // read a bit
-	        t = levelTime( HIGH );         // 2.
-          if ( t < 12 )                        // specs say: 20us
+	        t = levelTime( HIGH );              // 2.
+          if ( t < 12 ) {                     // specs say: 20us
               return SimpleDHTErrDataRead;
-              //return (t == 0 ? 1234 : t);   // DEBUG
+          }
 	        data[ j ] = ( t > 40 ? 1 : 0 );     // specs: 26-28us -> 0, 70us -> 1
     }
 
     // DHT11 EOF:
     //    1. PULL LOW 50us.
-    t = levelTime( LOW );                // 1.
+    t = levelTime( LOW );                     // 1.
     if ( t < 35 ) {                           // specs say: 50us
         return SimpleDHTErrDataEOF;
-        //return (t == 0 ? 1234 : t);           // DEBUG
     }
 
     return SimpleDHTErrSuccess;
