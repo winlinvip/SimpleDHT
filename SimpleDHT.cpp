@@ -23,13 +23,14 @@ SOFTWARE.
 */
 
 #include "SimpleDHT.h"
+#include <limits.h>
 
-int SimpleDHT::read(int pin, byte* ptemperature, byte* phumidity, byte pdata[40]) {
+int SimpleDHT::read(byte* ptemperature, byte* phumidity, byte pdata[40]) {
     int ret = SimpleDHTErrSuccess;
 
     float temperature = 0;
     float humidity = 0;
-    if ((ret = read2(pin, &temperature, &humidity, pdata)) != SimpleDHTErrSuccess) {
+    if ((ret = read2(&temperature, &humidity, pdata)) != SimpleDHTErrSuccess) {
         return ret;
     }
 
@@ -44,7 +45,7 @@ int SimpleDHT::read(int pin, byte* ptemperature, byte* phumidity, byte pdata[40]
     return ret;
 }
 
-int SimpleDHT::confirm(int pin, int us, byte level) {
+int SimpleDHT::confirm(int us, byte level) {
     int cnt = us / 10;
     if ((us % 10) > 0) {
         cnt++;
@@ -65,6 +66,58 @@ int SimpleDHT::confirm(int pin, int us, byte level) {
     }
     return SimpleDHTErrSuccess;
 }
+
+
+int SimpleDHT::levelTime( byte level, int interval = 10 )
+{
+    unsigned long time_start = micros(),
+        time_end, time;
+
+    // to correct: limit max time to prevent inf. loop
+  #ifdef __AVR
+    uint8_t portState = level ? bitmask : 0;
+    do {
+        delayMicroseconds( interval );
+    } while ( ( *portInputRegister( port ) & bitmask ) == portState );
+  #else
+    do {
+       delayMicroseconds( interval );
+    } while ( digitalRead( pin ) == level );
+  #endif
+
+    time_end = micros();
+
+    if ( time_end < time_start )
+    {   // clock overflow (went back through 0)
+             time = time_end + ( ULONG_MAX - time_start );
+    } else { time = time_end - time_start; }
+
+    return time;
+}
+
+int SimpleDHT::levelTimePrecise( byte level )
+{
+    unsigned long time_start = micros(),
+        time_end, time;
+
+    // to correct: limit max time to prevent inf. loop
+  #ifdef __AVR
+    uint8_t portState = level ? bitmask : 0;
+    while ( ( *portInputRegister( port ) & bitmask ) == portState );
+  #else
+    while ( digitalRead( pin ) == level );
+  #endif
+
+    time_end = micros();
+
+    if ( time_end < time_start )
+    {   // clock overflow (went back through 0)
+             time = time_end + ( ULONG_MAX - time_start );
+    } else { time = time_end - time_start; }
+
+    return time;
+}
+
 
 byte SimpleDHT::bits2byte(byte data[8]) {
     byte v = 0;
@@ -91,11 +144,11 @@ int SimpleDHT::parse(byte data[40], short* ptemperature, short* phumidity) {
     return SimpleDHTErrSuccess;
 }
 
-int SimpleDHT11::read2(int pin, float* ptemperature, float* phumidity, byte pdata[40]) {
+int SimpleDHT11::read2(float* ptemperature, float* phumidity, byte pdata[40]) {
     int ret = SimpleDHTErrSuccess;
 
     byte data[40] = {0};
-    if ((ret = sample(pin, data)) != SimpleDHTErrSuccess) {
+    if ((ret = sample(data)) != SimpleDHTErrSuccess) {
         return ret;
     }
 
@@ -123,72 +176,88 @@ int SimpleDHT11::read2(int pin, float* ptemperature, float* phumidity, byte pdat
     return ret;
 }
 
-int SimpleDHT11::sample(int pin, byte data[40]) {
+
+int SimpleDHT11::sample(byte data[40]) {
     // empty output data.
     memset(data, 0, 40);
 
-    // According to protocol: https://akizukidenshi.com/download/ds/aosong/DHT11.pdf
+    // According to protocol: [1] https://akizukidenshi.com/download/ds/aosong/DHT11.pdf
     // notify DHT11 to start:
     //    1. PULL LOW 20ms.
     //    2. PULL HIGH 20-40us.
     //    3. SET TO INPUT.
+    // Changes in timing done according to:
+    //  [2] https://www.mouser.com/ds/2/758/DHT11-Technical-Data-Sheet-Translated-Version-1143054.pdf
+    // - original values specified in code
+    // - since they were not working (MCU-dependent timing?), replace in code with
+    //   _working_ values based on measurements done with levelTime()
     pinMode(pin, OUTPUT);
-    digitalWrite(pin, LOW);
-    delay(20);
     digitalWrite(pin, HIGH);
+    delay(500);
+
+    digitalWrite(pin, LOW);            // 1.
+    delay(20);                         // specs [2]: 18us
+
+    digitalWrite(pin, HIGH);           // 2.
+    delayMicroseconds(25);             // specs [2]: 20-40us
+
     pinMode(pin, INPUT);
-    delayMicroseconds(30);
+
     // DHT11 starting:
     //    1. PULL LOW 80us
     //    2. PULL HIGH 80us
-    if (confirm(pin, 80, LOW)) {
+    int t = levelTime( LOW );     // 1.
+    //if (confirm(pin, 80, LOW)) {
+    if ( t < 60 ) {                      // specs [2]: 80us
         return SimpleDHTErrStartLow;
+        //return (t == 0 ? 1234 : t);  // DEBUG
     }
-    if (confirm(pin, 80, HIGH)) {
+
+    t = levelTime( HIGH );        // 2.
+    //if (confirm(pin, 80, HIGH)) {
+    if ( t < 70 ) {                    // specs [2]: 80us
         return SimpleDHTErrStartHigh;
+        //return (t == 0 ? 1234 : t);  // DEBUG
     }
 
     // DHT11 data transmite:
     //    1. 1bit start, PULL LOW 50us
-    //    2. PULL HIGH 26-28us, bit(0)
-    //    3. PULL HIGH 70us, bit(1)
-    for (int j = 0; j < 40; j++) {
-        if (confirm(pin, 50, LOW)) {
-            return SimpleDHTErrDataLow;
-        }
+    //    2. PULL HIGH:
+    //         - 26-28us, bit(0)
+    //         - 70us, bit(1)
+    for (int j = 0; j < 40; j++)
+    {
+          t = levelTime( LOW, 10 );     // 1.
+          //if (confirm(pin, 50, LOW)) {
+          if ( t < 32 ) {                    // specs says: 50us
+              //return SimpleDHTErrDataLow;
+              return (t == 0 ? 1234 : t);  // DEBUG
+          }
 
-        // read a bit, should never call method,
-        // for the method call use more than 20us,
-        // so it maybe failed to detect the bit0.
-        bool ok = false;
-        int tick = 0;
-        for (int i = 0; i < 8; i++, tick++) {
-            if (digitalRead(pin) != HIGH) {
-                ok = true;
-                break;
-            }
-            delayMicroseconds(10);
-        }
-        if (!ok) {
-            return SimpleDHTErrDataRead;
-        }
-        data[j] = (tick > 3? 1:0);
+          // read a bit
+	        t = levelTime( HIGH );         // 2.
+          if ( t < 12 )                        // specs say: 20us
+              return SimpleDHTErrDataRead;
+              //return (t == 0 ? 1234 : t);   // DEBUG
+	        data[ j ] = ( t > 40 ? 1 : 0 );     // specs: 26-28us -> 0, 70us -> 1
     }
 
     // DHT11 EOF:
     //    1. PULL LOW 50us.
-    if (confirm(pin, 50, LOW)) {
+    t = levelTime( LOW );                // 1.
+    if ( t < 35 ) {                           // specs say: 50us
         return SimpleDHTErrDataEOF;
+        //return (t == 0 ? 1234 : t);           // DEBUG
     }
 
     return SimpleDHTErrSuccess;
 }
 
-int SimpleDHT22::read2(int pin, float* ptemperature, float* phumidity, byte pdata[40]) {
+int SimpleDHT22::read2(float* ptemperature, float* phumidity, byte pdata[40]) {
     int ret = SimpleDHTErrSuccess;
 
     byte data[40] = {0};
-    if ((ret = sample(pin, data)) != SimpleDHTErrSuccess) {
+    if ((ret = sample(data)) != SimpleDHTErrSuccess) {
         return ret;
     }
 
@@ -211,12 +280,12 @@ int SimpleDHT22::read2(int pin, float* ptemperature, float* phumidity, byte pdat
     return ret;
 }
 
-int SimpleDHT22::sample(int pin, byte data[40]) {
+int SimpleDHT22::sample(byte data[40]) {
     // empty output data.
     memset(data, 0, 40);
 
     // According to protocol: http://akizukidenshi.com/download/ds/aosong/AM2302.pdf
-    // notify DHT11 to start: 
+    // notify DHT11 to start:
     //    1. T(be), PULL LOW 1ms(0.8-20ms).
     //    2. T(go), PULL HIGH 30us(20-200us), use 40us.
     //    3. SET TO INPUT.
@@ -230,10 +299,10 @@ int SimpleDHT22::sample(int pin, byte data[40]) {
     // DHT11 starting:
     //    1. T(rel), PULL LOW 80us(75-85us), use 90us.
     //    2. T(reh), PULL HIGH 80us(75-85us), use 90us.
-    if (confirm(pin, 90, LOW)) {
+    if (confirm(90, LOW)) {
         return SimpleDHTErrStartLow;
     }
-    if (confirm(pin, 90, HIGH)) {
+    if (confirm(90, HIGH)) {
         return SimpleDHTErrStartHigh;
     }
 
@@ -242,7 +311,7 @@ int SimpleDHT22::sample(int pin, byte data[40]) {
     //    2. T(H0), PULL HIGH 26us(22-30us), bit(0)
     //    3. T(H1), PULL HIGH 70us(68-75us), bit(1)
     for (int j = 0; j < 40; j++) {
-        if (confirm(pin, 60, LOW)) {
+        if (confirm(60, LOW)) {
             return SimpleDHTErrDataLow;
         }
 
@@ -266,10 +335,9 @@ int SimpleDHT22::sample(int pin, byte data[40]) {
 
     // DHT11 EOF:
     //    1. T(en), PULL LOW 50us(45-55us), use 60us.
-    if (confirm(pin, 60, LOW)) {
+    if (confirm(60, LOW)) {
         return SimpleDHTErrDataEOF;
     }
 
     return SimpleDHTErrSuccess;
 }
-
