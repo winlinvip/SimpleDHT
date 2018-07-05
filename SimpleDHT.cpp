@@ -207,7 +207,7 @@ int SimpleDHT11::sample(byte data[40]) {
     //    1. PULL LOW 80us
     //    2. PULL HIGH 80us
     int t = levelTime( LOW );          // 1.
-    if ( t < 60 ) {                    // specs [2]: 80us
+    if ( t < 38 ) {                    // specs [2]: 80us
         return SimpleDHTErrStartLow;
     }
 
