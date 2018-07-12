@@ -23,7 +23,6 @@ SOFTWARE.
 */
 
 #include "SimpleDHT.h"
-#include <limits.h>
 
 int SimpleDHT::read(byte* ptemperature, byte* phumidity, byte pdata[40]) {
     int ret = SimpleDHTErrSuccess;
@@ -87,10 +86,10 @@ int SimpleDHT::levelTime( byte level, int interval )
 
     time_end = micros();
 
-    if ( time_end < time_start )
-    {   // clock overflow (went back through 0)
-             time = time_end + ( ULONG_MAX - time_start );
-    } else { time = time_end - time_start; }
+    // for an unsigned int type, the difference have a correct value even if overflow
+    // (explanation here:
+    //     https://arduino.stackexchange.com/questions/33572/arduino-countdown-without-using-delay )
+    time = time_end - time_start;
 
     return time;
 }
@@ -110,10 +109,10 @@ int SimpleDHT::levelTimePrecise( byte level )
 
     time_end = micros();
 
-    if ( time_end < time_start )
-    {   // clock overflow (went back through 0)
-             time = time_end + ( ULONG_MAX - time_start );
-    } else { time = time_end - time_start; }
+    // for an unsigned int type, the difference have a correct value even if overflow
+    // (explanation here:
+    //     https://arduino.stackexchange.com/questions/33572/arduino-countdown-without-using-delay )
+    time = time_end - time_start;
 
     return time;
 }
