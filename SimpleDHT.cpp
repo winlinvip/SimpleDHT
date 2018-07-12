@@ -215,7 +215,7 @@ int SimpleDHT11::sample(byte data[40]) {
     }
 
     t = levelTime( HIGH );             // 2.
-    if ( t < 70 ) {                    // specs [2]: 80us
+    if ( t < 68 ) {                    // specs [2]: 80us
         return SimpleDHTErrStartHigh;
     }
 
@@ -227,7 +227,7 @@ int SimpleDHT11::sample(byte data[40]) {
     for (int j = 0; j < 40; j++)
     {
           t = levelTime( LOW, 10 );          // 1.
-          if ( t < 32 ) {                    // specs says: 50us
+          if ( t < 24 ) {                    // specs says: 50us
               return SimpleDHTErrDataLow;
           }
 
@@ -242,7 +242,7 @@ int SimpleDHT11::sample(byte data[40]) {
     // DHT11 EOF:
     //    1. PULL LOW 50us.
     t = levelTime( LOW );                     // 1.
-    if ( t < 35 ) {                           // specs say: 50us
+    if ( t < 24 ) {                           // specs say: 50us
         return SimpleDHTErrDataEOF;
     }
 
