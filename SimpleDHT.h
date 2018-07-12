@@ -46,6 +46,7 @@
 
 class SimpleDHT {
 protected:
+    static const unsigned long maxLevelTime = 10000000ul;   // 1s
     int pin = -1;
 
 #ifdef __AVR

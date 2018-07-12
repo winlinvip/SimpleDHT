@@ -70,26 +70,27 @@ int SimpleDHT::confirm(int us, byte level) {
 int SimpleDHT::levelTime( byte level, int interval )
 {
     unsigned long time_start = micros(),
-        time_end, time;
+        time;
 
-    // to correct: limit max time to prevent inf. loop
   #ifdef __AVR
     uint8_t portState = level ? bitmask : 0;
-    do {
-        delayMicroseconds( interval );
-    } while ( ( *portInputRegister( port ) & bitmask ) == portState );
-  #else
-    do {
-       delayMicroseconds( interval );
-    } while ( digitalRead( pin ) == level );
   #endif
+    do
+    {
+        delayMicroseconds( interval );
 
-    time_end = micros();
-
-    // for an unsigned int type, the difference have a correct value even if overflow
-    // (explanation here:
-    //     https://arduino.stackexchange.com/questions/33572/arduino-countdown-without-using-delay )
-    time = time_end - time_start;
+        // for an unsigned int type, the difference have a correct value
+        // even if overflow, explanation here:
+        //     https://arduino.stackexchange.com/questions/33572/arduino-countdown-without-using-delay
+        time = micros() - time_start;
+    }
+  #ifdef __AVR
+      while ( ( *portInputRegister( port ) & bitmask ) == portState &&
+              ( time < maxLevelTime ) );
+  #else
+      while ( digitalRead( pin ) == level &&
+              ( time < maxLevelTime ) );
+  #endif
 
     return time;
 }
@@ -97,22 +98,25 @@ int SimpleDHT::levelTime( byte level, int interval )
 int SimpleDHT::levelTimePrecise( byte level )
 {
     unsigned long time_start = micros(),
-        time_end, time;
+        time;
 
-    // to correct: limit max time to prevent inf. loop
   #ifdef __AVR
     uint8_t portState = level ? bitmask : 0;
-    while ( ( *portInputRegister( port ) & bitmask ) == portState );
-  #else
-    while ( digitalRead( pin ) == level );
   #endif
-
-    time_end = micros();
-
-    // for an unsigned int type, the difference have a correct value even if overflow
-    // (explanation here:
-    //     https://arduino.stackexchange.com/questions/33572/arduino-countdown-without-using-delay )
-    time = time_end - time_start;
+    do
+    {
+        // for an unsigned int type, the difference have a correct value
+        // even if overflow, explanation here:
+        //     https://arduino.stackexchange.com/questions/33572/arduino-countdown-without-using-delay
+        time = micros() - time_start;
+    }
+  #ifdef __AVR
+      while ( ( *portInputRegister( port ) & bitmask ) == portState &&
+              ( time < maxLevelTime ) );
+  #else
+      while ( digitalRead( pin ) == level &&
+              ( time < maxLevelTime ) );
+  #endif
 
     return time;
 }
@@ -206,7 +210,7 @@ int SimpleDHT11::sample(byte data[40]) {
     //    1. PULL LOW 80us
     //    2. PULL HIGH 80us
     int t = levelTime( LOW );          // 1.
-    if ( t < 38 ) {                    // specs [2]: 80us
+    if ( t < 36 ) {                    // specs [2]: 80us
         return SimpleDHTErrStartLow;
     }
 
@@ -228,11 +232,11 @@ int SimpleDHT11::sample(byte data[40]) {
           }
 
           // read a bit
-	        t = levelTime( HIGH );              // 2.
-          if ( t < 12 ) {                     // specs say: 20us
+          t = levelTime( HIGH );              // 2.
+          if ( t < 11 ) {                     // specs say: 20us
               return SimpleDHTErrDataRead;
           }
-	        data[ j ] = ( t > 40 ? 1 : 0 );     // specs: 26-28us -> 0, 70us -> 1
+          data[ j ] = ( t > 40 ? 1 : 0 );     // specs: 26-28us -> 0, 70us -> 1
     }
 
     // DHT11 EOF:
