@@ -122,15 +122,15 @@ protected:
     // measure and return time (in microseconds)
     // with precision defined by interval between checking the state
     // while pin is in specified state (HIGH or LOW)
-    // @param pin      the DHT11 pin.
     // @param level    state which time is measured.
     // @param interval time interval between consecutive state checks.
+    // @return measured time (microseconds)
     virtual int levelTime(byte level, int interval = 10);
 
     // measure and return time (in microseconds)
     // while pin is in specified state (HIGH or LOW)
-    // @param pin   the DHT11 pin.
     // @param level state which time is measured
+    // @return measured time (microseconds)
     virtual int levelTimePrecise(byte level);
 
     // @data the bits of a byte.
@@ -138,7 +138,6 @@ protected:
     virtual byte bits2byte(byte data[8]);
 
     // read temperature and humidity from dht11.
-    // @param pin the pin for DHT11, for example, 2.
     // @param data a byte[40] to read bits to 5bytes.
     // @return 0 success; otherwise, error.
     // @remark please use simple_dht11_read().
