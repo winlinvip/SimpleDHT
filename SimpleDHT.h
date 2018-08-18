@@ -66,6 +66,8 @@ public:
         setPin( pin );
     };
 
+protected:
+
     // (eventually) change the pin configuration for existing instance
     // @param pin the DHT11 pin.
     void setPin( int pin ) {
@@ -86,6 +88,8 @@ public:
     // @return bitmask to access pin state from port input register
     int getPort() { return port; }
 #endif
+
+public:
 
     // to read from dht11 or dht22.
     // @param pin the DHT11 pin.
@@ -116,12 +120,6 @@ protected:
     // @param interval time interval between consecutive state checks.
     // @return measured time (microseconds)
     virtual int levelTime(byte level, int interval = 10);
-
-    // measure and return time (in microseconds)
-    // while pin is in specified state (HIGH or LOW)
-    // @param level state which time is measured
-    // @return measured time (microseconds)
-    virtual int levelTimePrecise(byte level);
 
     // @data the bits of a byte.
     // @remark please use simple_dht11_read().

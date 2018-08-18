@@ -73,33 +73,6 @@ int SimpleDHT::levelTime( byte level, int interval )
     return time;
 }
 
-int SimpleDHT::levelTimePrecise( byte level )
-{
-    unsigned long time_start = micros(),
-        time;
-
-  #ifdef __AVR
-    uint8_t portState = level ? bitmask : 0;
-  #endif
-    do
-    {
-        // for an unsigned int type, the difference have a correct value
-        // even if overflow, explanation here:
-        //     https://arduino.stackexchange.com/questions/33572/arduino-countdown-without-using-delay
-        time = micros() - time_start;
-    }
-  #ifdef __AVR
-      while ( ( *portInputRegister( port ) & bitmask ) == portState &&
-              ( time < maxLevelTime ) );
-  #else
-      while ( digitalRead( pin ) == level &&
-              ( time < maxLevelTime ) );
-  #endif
-
-    return time;
-}
-
-
 byte SimpleDHT::bits2byte(byte data[8]) {
     byte v = 0;
     for (int i = 0; i < 8; i++) {
@@ -204,7 +177,7 @@ int SimpleDHT11::sample(byte data[40]) {
     //         - 70us, bit(1)
     for (int j = 0; j < 40; j++)
     {
-          t = levelTime( LOW, 10 );          // 1.
+          t = levelTime( LOW );          // 1.
           if ( t < 24 ) {                    // specs says: 50us
               return SimpleDHTErrDataLow;
           }
@@ -289,7 +262,7 @@ int SimpleDHT22::sample(byte data[40]) {
     //    2. T(H0), PULL HIGH 26us(22-30us), bit(0)
     //    3. T(H1), PULL HIGH 70us(68-75us), bit(1)
     for (int j = 0; j < 40; j++) {
-          t = levelTime( LOW, 10 );          // 1.
+          t = levelTime( LOW );          // 1.
           if ( t < 24 ) {                    // specs says: 50us
               return SimpleDHTErrDataLow;
           }
