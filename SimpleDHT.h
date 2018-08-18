@@ -46,9 +46,8 @@
 
 class SimpleDHT {
 protected:
-    long maxLevelTime = 5000000;   // 500ms
+    long levelTimeout = 5000000; // 500ms
     int pin = -1;
-
 #ifdef __AVR
     // For direct GPIO access (8-bit AVRs only), store port and bitmask
     // of the digital pin connected to the DHT.
@@ -56,11 +55,9 @@ protected:
     uint8_t bitmask = 0xFF;
     uint8_t port    = 0xFF;
 #endif
-
 public:
     SimpleDHT();
     SimpleDHT( int pin );
-
 public:
     // to read from dht11 or dht22.
     // @param pin the DHT11 pin.
@@ -73,17 +70,14 @@ public:
     // @return SimpleDHTErrSuccess is success; otherwise, failed.
     virtual int read(byte* ptemperature, byte* phumidity, byte pdata[40]);
     virtual int read(int pin, byte* ptemperature, byte* phumidity, byte pdata[40]);
-
     // to get a more accurate data.
     // @remark it's available for dht22. for dht11, it's the same of read().
     virtual int read2(float* ptemperature, float* phumidity, byte pdata[40]) = 0;
     virtual int read2(int pin, float* ptemperature, float* phumidity, byte pdata[40]) = 0;
-
 protected:
     // (eventually) change the pin configuration for existing instance
     // @param pin the DHT11 pin.
     void setPin( int pin );
-
     // only AVR - methods returning low level conf. of the pin
 #ifdef __AVR
     // @return bitmask to access pin state from port input register
@@ -91,30 +85,25 @@ protected:
     // @return bitmask to access pin state from port input register
     int getPort();
 #endif
-
 protected:
     // measure and return time (in microseconds)
     // with precision defined by interval between checking the state
     // while pin is in specified state (HIGH or LOW)
     // @param level    state which time is measured.
     // @param interval time interval between consecutive state checks.
-    // @return measured time (microseconds)
+    // @return measured time (microseconds). -1 if timeout.
     virtual long levelTime(byte level, int firstWait = 10, int interval = 6);
-
     // @data the bits of a byte.
     // @remark please use simple_dht11_read().
     virtual byte bits2byte(byte data[8]);
-
     // read temperature and humidity from dht11.
     // @param data a byte[40] to read bits to 5bytes.
     // @return 0 success; otherwise, error.
     // @remark please use simple_dht11_read().
     virtual int sample(byte data[40]) = 0;
-
     // parse the 40bits data to temperature and humidity.
     // @remark please use simple_dht11_read().
     virtual int parse(byte data[40], short* ptemperature, short* phumidity);
-
 };
 
 /*
@@ -138,11 +127,9 @@ class SimpleDHT11 : public SimpleDHT {
 public:
     SimpleDHT11();
     SimpleDHT11(int pin);
-
 public:
     virtual int read2(float* ptemperature, float* phumidity, byte pdata[40]);
     virtual int read2(int pin, float* ptemperature, float* phumidity, byte pdata[40]);
-
 protected:
     virtual int sample(byte data[40]);
 };
@@ -168,11 +155,9 @@ class SimpleDHT22 : public SimpleDHT {
 public:
     SimpleDHT22();
     SimpleDHT22(int pin);
-
 public:
     virtual int read2(float* ptemperature, float* phumidity, byte pdata[40]);
     virtual int read2(int pin, float* ptemperature, float* phumidity, byte pdata[40]);
-
 protected:
     virtual int sample(byte data[40]);
 };

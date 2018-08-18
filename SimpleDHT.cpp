@@ -83,7 +83,7 @@ long SimpleDHT::levelTime( byte level, int firstWait, int interval ) {
 
     bool loop = true;
     for ( int i = 0 ; loop; i++ ) {
-        if ( time < 0 || time > maxLevelTime ) {
+        if ( time < 0 || time > levelTimeout ) {
             return -1;
         }
 
