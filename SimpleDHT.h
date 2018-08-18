@@ -46,51 +46,22 @@
 
 class SimpleDHT {
 protected:
-    static const unsigned long maxLevelTime = 10000000ul;   // 1s
+    long maxLevelTime = 5000000;   // 500ms
     int pin = -1;
 
 #ifdef __AVR
     // For direct GPIO access (8-bit AVRs only), store port and bitmask
     // of the digital pin connected to the DHT.
     // (other platforms use digitalRead(), do not need this)
-    uint8_t bitmask = 0xFF,
-            port    = 0xFF;
+    uint8_t bitmask = 0xFF;
+    uint8_t port    = 0xFF;
 #endif
 
 public:
-
-    SimpleDHT(){}
-
-    // @param pin the DHT11 pin.
-    SimpleDHT( int pin ) {
-        setPin( pin );
-    };
-
-protected:
-
-    // (eventually) change the pin configuration for existing instance
-    // @param pin the DHT11 pin.
-    void setPin( int pin ) {
-        this->pin = pin;
-#ifdef __AVR
-        // (only AVR) - set low level properties for configured pin
-        bitmask = digitalPinToBitMask( pin );
-        port    = digitalPinToPort( pin );
-#endif
-    }
-
-#ifdef __AVR
-    // only AVR - methods returning low level conf. of the pin
-
-    // @return bitmask to access pin state from port input register
-    int getBitmask() { return bitmask; }
-
-    // @return bitmask to access pin state from port input register
-    int getPort() { return port; }
-#endif
+    SimpleDHT();
+    SimpleDHT( int pin );
 
 public:
-
     // to read from dht11 or dht22.
     // @param pin the DHT11 pin.
     // @param ptemperature output, NULL to igore. In Celsius.
@@ -101,16 +72,25 @@ public:
     // @remark the min delay for this method is 1s(DHT11) or 2s(DHT22).
     // @return SimpleDHTErrSuccess is success; otherwise, failed.
     virtual int read(byte* ptemperature, byte* phumidity, byte pdata[40]);
-    virtual int read(int pin, byte* ptemperature, byte* phumidity, byte pdata[40])
-    {
-        setPin( pin );
-        read( ptemperature, phumidity, pdata );
-    }
+    virtual int read(int pin, byte* ptemperature, byte* phumidity, byte pdata[40]);
 
     // to get a more accurate data.
     // @remark it's available for dht22. for dht11, it's the same of read().
     virtual int read2(float* ptemperature, float* phumidity, byte pdata[40]) = 0;
     virtual int read2(int pin, float* ptemperature, float* phumidity, byte pdata[40]) = 0;
+
+protected:
+    // (eventually) change the pin configuration for existing instance
+    // @param pin the DHT11 pin.
+    void setPin( int pin );
+
+    // only AVR - methods returning low level conf. of the pin
+#ifdef __AVR
+    // @return bitmask to access pin state from port input register
+    int getBitmask();
+    // @return bitmask to access pin state from port input register
+    int getPort();
+#endif
 
 protected:
     // measure and return time (in microseconds)
@@ -119,7 +99,7 @@ protected:
     // @param level    state which time is measured.
     // @param interval time interval between consecutive state checks.
     // @return measured time (microseconds)
-    virtual int levelTime(byte level, int interval = 10);
+    virtual long levelTime(byte level, int firstWait = 10, int interval = 6);
 
     // @data the bits of a byte.
     // @remark please use simple_dht11_read().
@@ -156,27 +136,21 @@ protected:
 */
 class SimpleDHT11 : public SimpleDHT {
 public:
-    SimpleDHT11() {}
+    SimpleDHT11();
+    SimpleDHT11(int pin);
 
-    SimpleDHT11(int pin)
-        : SimpleDHT (pin)
-    {}
-
+public:
     virtual int read2(float* ptemperature, float* phumidity, byte pdata[40]);
-    virtual int read2(int pin, float* ptemperature, float* phumidity, byte pdata[40])
-    {
-        setPin( pin );
-        read2( ptemperature, phumidity, pdata );
-    }
+    virtual int read2(int pin, float* ptemperature, float* phumidity, byte pdata[40]);
 
 protected:
     virtual int sample(byte data[40]);
 };
 
 /*
-    Simple DHT11
+    Simple DHT22
 
-    Simple, Stable and Fast DHT11 library.
+    Simple, Stable and Fast DHT22 library.
 
     The circuit:
     * VCC: 5V or 3V
@@ -192,17 +166,12 @@ protected:
 */
 class SimpleDHT22 : public SimpleDHT {
 public:
-    SimpleDHT22() {}
-    SimpleDHT22(int pin)
-        : SimpleDHT (pin)
-    {}
+    SimpleDHT22();
+    SimpleDHT22(int pin);
 
+public:
     virtual int read2(float* ptemperature, float* phumidity, byte pdata[40]);
-    virtual int read2(int pin, float* ptemperature, float* phumidity, byte pdata[40])
-    {
-        setPin( pin );
-        read2( ptemperature, phumidity, pdata );
-    }
+    virtual int read2(int pin, float* ptemperature, float* phumidity, byte pdata[40]);
 
 protected:
     virtual int sample(byte data[40]);

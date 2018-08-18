@@ -24,6 +24,13 @@ SOFTWARE.
 
 #include "SimpleDHT.h"
 
+SimpleDHT::SimpleDHT() {
+}
+
+SimpleDHT::SimpleDHT( int pin) {
+    setPin( pin );
+}
+
 int SimpleDHT::read(byte* ptemperature, byte* phumidity, byte pdata[40]) {
     int ret = SimpleDHTErrSuccess;
 
@@ -44,31 +51,61 @@ int SimpleDHT::read(byte* ptemperature, byte* phumidity, byte pdata[40]) {
     return ret;
 }
 
+int SimpleDHT::read(int pin, byte* ptemperature, byte* phumidity, byte pdata[40]) {
+    setPin( pin );
+    read( ptemperature, phumidity, pdata );
+}
 
-int SimpleDHT::levelTime( byte level, int interval )
-{
-    unsigned long time_start = micros(),
-        time;
+void SimpleDHT::setPin( int pin ) {
+    this->pin = pin;
+#ifdef __AVR
+    // (only AVR) - set low level properties for configured pin
+    bitmask = digitalPinToBitMask( pin );
+    port    = digitalPinToPort( pin );
+#endif
+}
 
-  #ifdef __AVR
+int SimpleDHT::getBitmask() {
+    return bitmask;
+}
+
+int SimpleDHT::getPort() {
+    return port;
+}
+
+long SimpleDHT::levelTime( byte level, int firstWait, int interval ) {
+    unsigned long time_start = micros();
+    long time = 0;
+
+#ifdef __AVR
     uint8_t portState = level ? bitmask : 0;
-  #endif
-    do
-    {
-        delayMicroseconds( interval );
+#endif
+
+    bool loop = true;
+    for ( int i = 0 ; loop; i++ ) {
+        if ( time < 0 || time > maxLevelTime ) {
+            return -1;
+        }
+
+        if ( i == 0 ) {
+            if ( firstWait > 0 ) {
+                delayMicroseconds( firstWait );
+            }
+        } else if ( interval > 0 ) {
+            delayMicroseconds( interval );
+        }
 
         // for an unsigned int type, the difference have a correct value
         // even if overflow, explanation here:
         //     https://arduino.stackexchange.com/questions/33572/arduino-countdown-without-using-delay
         time = micros() - time_start;
+
+#ifdef __AVR
+        loop = ( ( *portInputRegister( port ) & bitmask ) == portState );
+#else
+        loop = ( digitalRead( pin ) == level );
+#endif
     }
-  #ifdef __AVR
-      while ( ( *portInputRegister( port ) & bitmask ) == portState &&
-              ( time < maxLevelTime ) );
-  #else
-      while ( digitalRead( pin ) == level &&
-              ( time < maxLevelTime ) );
-  #endif
 
     return time;
 }
@@ -96,6 +133,12 @@ int SimpleDHT::parse(byte data[40], short* ptemperature, short* phumidity) {
     *phumidity = humidity<<8 | humidity2;
 
     return SimpleDHTErrSuccess;
+}
+
+SimpleDHT11::SimpleDHT11() {
+}
+
+SimpleDHT11::SimpleDHT11(int pin) : SimpleDHT (pin) {
 }
 
 int SimpleDHT11::read2(float* ptemperature, float* phumidity, byte pdata[40]) {
@@ -130,6 +173,10 @@ int SimpleDHT11::read2(float* ptemperature, float* phumidity, byte pdata[40]) {
     return ret;
 }
 
+int SimpleDHT11::read2(int pin, float* ptemperature, float* phumidity, byte pdata[40]) {
+    setPin( pin );
+    read2( ptemperature, phumidity, pdata );
+}
 
 int SimpleDHT11::sample(byte data[40]) {
     // empty output data.
@@ -159,7 +206,7 @@ int SimpleDHT11::sample(byte data[40]) {
     // DHT11 starting:
     //    1. PULL LOW 80us
     //    2. PULL HIGH 80us
-    int t = levelTime( LOW );          // 1.
+    long t = levelTime( LOW );          // 1.
     if ( t < 36 ) {                    // specs [2]: 80us
         return SimpleDHTErrStartLow;
     }
@@ -199,6 +246,12 @@ int SimpleDHT11::sample(byte data[40]) {
     return SimpleDHTErrSuccess;
 }
 
+SimpleDHT22::SimpleDHT22() {
+}
+
+SimpleDHT22::SimpleDHT22(int pin) : SimpleDHT (pin) {
+}
+
 int SimpleDHT22::read2(float* ptemperature, float* phumidity, byte pdata[40]) {
     int ret = SimpleDHTErrSuccess;
 
@@ -226,6 +279,11 @@ int SimpleDHT22::read2(float* ptemperature, float* phumidity, byte pdata[40]) {
     return ret;
 }
 
+int SimpleDHT22::read2(int pin, float* ptemperature, float* phumidity, byte pdata[40]) {
+    setPin( pin );
+    read2( ptemperature, phumidity, pdata );
+}
+
 int SimpleDHT22::sample(byte data[40]) {
     // empty output data.
     memset(data, 0, 40);
@@ -248,8 +306,8 @@ int SimpleDHT22::sample(byte data[40]) {
     // DHT11 starting:
     //    1. T(rel), PULL LOW 80us(75-85us).
     //    2. T(reh), PULL HIGH 80us(75-85us).
-    int t = 0;
-    if ( (levelTime( LOW )) < 50 ) {
+    long t = 0;
+    if ( (t = levelTime( LOW )) < 50 ) {
         return SimpleDHTErrStartLow;
     }
     if ( (t = levelTime( HIGH )) < 50 ) {
