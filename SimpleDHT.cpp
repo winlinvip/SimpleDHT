@@ -146,16 +146,15 @@ int SimpleDHT11::sample(byte data[40]) {
     // - since they were not working (MCU-dependent timing?), replace in code with
     //   _working_ values based on measurements done with levelTimePrecise()
     pinMode(pin, OUTPUT);
-    digitalWrite(pin, HIGH);
-    delay(500);
-
     digitalWrite(pin, LOW);            // 1.
     delay(20);                         // specs [2]: 18us
 
+    // Pull high and set to input, before wait 40us.
+    // @see https://github.com/winlinvip/SimpleDHT/issues/4
+    // @see https://github.com/winlinvip/SimpleDHT/pull/5
     digitalWrite(pin, HIGH);           // 2.
-    delayMicroseconds(25);             // specs [2]: 20-40us
-
     pinMode(pin, INPUT);
+    delayMicroseconds(25);             // specs [2]: 20-40us
 
     // DHT11 starting:
     //    1. PULL LOW 80us
