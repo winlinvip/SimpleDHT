@@ -202,7 +202,7 @@ int SimpleDHT22::read2(int pin, float* ptemperature, float* phumidity, byte pdat
         memcpy(pdata, data, 40);
     }
     if (ptemperature) {
-        *ptemperature = (float)temperature / 10.0;
+        *ptemperature = (float)((temperature & 0x8000 ? -1 : 1) * (temperature & 0x7FFF)) / 10.0;
     }
     if (phumidity) {
         *phumidity = (float)humidity / 10.0;
