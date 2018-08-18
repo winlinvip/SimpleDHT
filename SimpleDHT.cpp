@@ -44,28 +44,6 @@ int SimpleDHT::read(byte* ptemperature, byte* phumidity, byte pdata[40]) {
     return ret;
 }
 
-int SimpleDHT::confirm(int us, byte level) {
-    int cnt = us / 10;
-    if ((us % 10) > 0) {
-        cnt++;
-    }
-
-    bool ok = false;
-    for (int i = 0; i < cnt; i++) {
-        delayMicroseconds(10);
-
-        if (digitalRead(pin) != level) {
-            ok = true;
-            break;
-        }
-    }
-
-    if (!ok) {
-        return -1;
-    }
-    return SimpleDHTErrSuccess;
-}
-
 
 int SimpleDHT::levelTime( byte level, int interval )
 {
@@ -288,50 +266,46 @@ int SimpleDHT22::sample(byte data[40]) {
     pinMode(pin, OUTPUT);
     digitalWrite(pin, LOW);
     delayMicroseconds(1000);
+    // Pull high and set to input, before wait 40us.
+    // @see https://github.com/winlinvip/SimpleDHT/issues/4
+    // @see https://github.com/winlinvip/SimpleDHT/pull/5
     digitalWrite(pin, HIGH);
     pinMode(pin, INPUT);
     delayMicroseconds(40);
 
     // DHT11 starting:
-    //    1. T(rel), PULL LOW 80us(75-85us), use 90us.
-    //    2. T(reh), PULL HIGH 80us(75-85us), use 90us.
-    if (confirm(90, LOW)) {
+    //    1. T(rel), PULL LOW 80us(75-85us).
+    //    2. T(reh), PULL HIGH 80us(75-85us).
+    int t = 0;
+    if ( (levelTime( LOW )) < 50 ) {
         return SimpleDHTErrStartLow;
     }
-    if (confirm(90, HIGH)) {
+    if ( (t = levelTime( HIGH )) < 50 ) {
         return SimpleDHTErrStartHigh;
     }
 
     // DHT11 data transmite:
-    //    1. T(LOW), 1bit start, PULL LOW 50us(48-55us), use 60us.
+    //    1. T(LOW), 1bit start, PULL LOW 50us(48-55us).
     //    2. T(H0), PULL HIGH 26us(22-30us), bit(0)
     //    3. T(H1), PULL HIGH 70us(68-75us), bit(1)
     for (int j = 0; j < 40; j++) {
-        if (confirm(60, LOW)) {
-            return SimpleDHTErrDataLow;
-        }
+          t = levelTime( LOW, 10 );          // 1.
+          if ( t < 24 ) {                    // specs says: 50us
+              return SimpleDHTErrDataLow;
+          }
 
-        // read a bit, should never call method,
-        // for the method call use more than 20us,
-        // so it maybe failed to detect the bit0.
-        bool ok = false;
-        int tick = 0;
-        for (int i = 0; i < 8; i++, tick++) {
-            if (digitalRead(pin) != HIGH) {
-                ok = true;
-                break;
-            }
-            delayMicroseconds(10);
-        }
-        if (!ok) {
-            return SimpleDHTErrDataRead;
-        }
-        data[j] = (tick > 3? 1:0);
+          // read a bit
+          t = levelTime( HIGH );              // 2.
+          if ( t < 11 ) {                     // specs say: 26us
+              return SimpleDHTErrDataRead;
+          }
+          data[ j ] = ( t > 40 ? 1 : 0 );     // specs: 22-30us -> 0, 70us -> 1
     }
 
     // DHT11 EOF:
-    //    1. T(en), PULL LOW 50us(45-55us), use 60us.
-    if (confirm(60, LOW)) {
+    //    1. T(en), PULL LOW 50us(45-55us).
+    t = levelTime( LOW );
+    if ( t < 24 ) {
         return SimpleDHTErrDataEOF;
     }
 

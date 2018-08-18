@@ -109,16 +109,6 @@ public:
     virtual int read2(int pin, float* ptemperature, float* phumidity, byte pdata[40]) = 0;
 
 protected:
-    // confirm the OUTPUT is level in us,
-    // for example, when DHT11 start sample, it will
-    //    1. PULL LOW 80us, call confirm(pin, 80, LOW)
-    //    2. PULL HIGH 80us, call confirm(pin, 80, HIGH)
-    // @return 0 success; oterwise, error.
-    // @remark should never used to read bits,
-    //    for function call use more time, maybe never got bit0.
-    // @remark please use simple_dht11_read().
-    virtual int confirm(int us, byte level);
-
     // measure and return time (in microseconds)
     // with precision defined by interval between checking the state
     // while pin is in specified state (HIGH or LOW)
