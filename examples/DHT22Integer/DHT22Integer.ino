@@ -5,7 +5,7 @@
 //      GND: GND
 //      DATA: 2
 int pinDHT22 = 2;
-SimpleDHT22 dht22;
+SimpleDHT22 dht22(pinDHT22);
 
 void setup() {
   Serial.begin(115200);
@@ -20,7 +20,7 @@ void loop() {
   byte temperature = 0;
   byte humidity = 0;
   int err = SimpleDHTErrSuccess;
-  if ((err = dht22.read(pinDHT22, &temperature, &humidity, NULL)) != SimpleDHTErrSuccess) {
+  if ((err = dht22.read(&temperature, &humidity, NULL)) != SimpleDHTErrSuccess) {
     Serial.print("Read DHT22 failed, err="); Serial.println(err);delay(2000);
     return;
   }

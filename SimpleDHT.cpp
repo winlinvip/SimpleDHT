@@ -318,7 +318,7 @@ int SimpleDHT22::sample(byte data[40]) {
     //    1. T(rel), PULL LOW 80us(75-85us).
     //    2. T(reh), PULL HIGH 80us(75-85us).
     long t = 0;
-    if ((t = levelTime(LOW)) < 50) {
+    if ((t = levelTime(LOW)) < 30) {
         return SimpleDHTErrStartLow;
     }
     if ((t = levelTime(HIGH)) < 50) {
