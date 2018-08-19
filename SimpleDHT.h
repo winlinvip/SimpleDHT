@@ -43,6 +43,8 @@
 #define SimpleDHTErrDataChecksum 105
 // Error when temperature and humidity are zero, it shouldn't happen.
 #define SimpleDHTErrZeroSamples 106
+// Error when pin is not initialized.
+#define SimpleDHTErrNoPin 107
 
 class SimpleDHT {
 protected:
@@ -57,7 +59,7 @@ protected:
 #endif
 public:
     SimpleDHT();
-    SimpleDHT( int pin );
+    SimpleDHT(int pin);
 public:
     // to read from dht11 or dht22.
     // @param pin the DHT11 pin.
