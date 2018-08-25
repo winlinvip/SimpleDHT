@@ -215,13 +215,13 @@ int SimpleDHT11::sample(byte data[40]) {
     //    1. PULL LOW 80us
     //    2. PULL HIGH 80us
     long t = levelTime(LOW);          // 1.
-    if (t < 36) {                    // specs [2]: 80us
-        return SimpleDHTErrStartLow;
+    if (t < 30) {                    // specs [2]: 80us
+        return simpleDHTCombileError(t, SimpleDHTErrStartLow);
     }
 
     t = levelTime(HIGH);             // 2.
-    if (t < 68) {                    // specs [2]: 80us
-        return SimpleDHTErrStartHigh;
+    if (t < 50) {                    // specs [2]: 80us
+        return simpleDHTCombileError(t, SimpleDHTErrStartHigh);
     }
 
     // DHT11 data transmite:
@@ -232,13 +232,13 @@ int SimpleDHT11::sample(byte data[40]) {
     for (int j = 0; j < 40; j++) {
           t = levelTime(LOW);          // 1.
           if (t < 24) {                    // specs says: 50us
-              return SimpleDHTErrDataLow;
+              return simpleDHTCombileError(t, SimpleDHTErrDataLow);
           }
 
           // read a bit
           t = levelTime(HIGH);              // 2.
           if (t < 11) {                     // specs say: 20us
-              return SimpleDHTErrDataRead;
+              return simpleDHTCombileError(t, SimpleDHTErrDataRead);
           }
           data[ j ] = (t > 40 ? 1 : 0);     // specs: 26-28us -> 0, 70us -> 1
     }
@@ -247,7 +247,7 @@ int SimpleDHT11::sample(byte data[40]) {
     //    1. PULL LOW 50us.
     t = levelTime(LOW);                     // 1.
     if (t < 24) {                           // specs say: 50us
-        return SimpleDHTErrDataEOF;
+        return simpleDHTCombileError(t, SimpleDHTErrDataEOF);
     }
 
     return SimpleDHTErrSuccess;
@@ -319,10 +319,10 @@ int SimpleDHT22::sample(byte data[40]) {
     //    2. T(reh), PULL HIGH 80us(75-85us).
     long t = 0;
     if ((t = levelTime(LOW)) < 30) {
-        return SimpleDHTErrStartLow;
+        return simpleDHTCombileError(t, SimpleDHTErrStartLow);
     }
     if ((t = levelTime(HIGH)) < 50) {
-        return SimpleDHTErrStartHigh;
+        return simpleDHTCombileError(t, SimpleDHTErrStartHigh);
     }
 
     // DHT11 data transmite:
@@ -332,13 +332,13 @@ int SimpleDHT22::sample(byte data[40]) {
     for (int j = 0; j < 40; j++) {
           t = levelTime(LOW);          // 1.
           if (t < 24) {                    // specs says: 50us
-              return SimpleDHTErrDataLow;
+              return simpleDHTCombileError(t, SimpleDHTErrDataLow);
           }
 
           // read a bit
           t = levelTime(HIGH);              // 2.
           if (t < 11) {                     // specs say: 26us
-              return SimpleDHTErrDataRead;
+              return simpleDHTCombileError(t, SimpleDHTErrDataRead);
           }
           data[ j ] = (t > 40 ? 1 : 0);     // specs: 22-30us -> 0, 70us -> 1
     }
@@ -347,7 +347,7 @@ int SimpleDHT22::sample(byte data[40]) {
     //    1. T(en), PULL LOW 50us(45-55us).
     t = levelTime(LOW);
     if (t < 24) {
-        return SimpleDHTErrDataEOF;
+        return simpleDHTCombileError(t, SimpleDHTErrDataEOF);
     }
 
     return SimpleDHTErrSuccess;

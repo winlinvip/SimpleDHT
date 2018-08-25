@@ -27,24 +27,31 @@
 
 #include <Arduino.h>
 
+// High 8bits are time duration.
+// Low 8bits are error code.
+// For example, 0x0310 means t=0x03 and code=0x10,
+// which is start low signal(0x10) error.
+// @see https://github.com/winlinvip/SimpleDHT/issues/25
+#define simpleDHTCombileError(t, err) ((t << 8) & 0xff00) | (err & 0x00ff)
+
 // Success.
 #define SimpleDHTErrSuccess 0
 // Error to wait for start low signal.
-#define SimpleDHTErrStartLow 100
+#define SimpleDHTErrStartLow 0x10
 // Error to wait for start high signal.
-#define SimpleDHTErrStartHigh 101
+#define SimpleDHTErrStartHigh 0x11
 // Error to wait for data start low signal.
-#define SimpleDHTErrDataLow 102
+#define SimpleDHTErrDataLow 0x12
 // Error to wait for data read signal.
-#define SimpleDHTErrDataRead 103
+#define SimpleDHTErrDataRead 0x13
 // Error to wait for data EOF signal.
-#define SimpleDHTErrDataEOF 104
+#define SimpleDHTErrDataEOF 0x14
 // Error to validate the checksum.
-#define SimpleDHTErrDataChecksum 105
+#define SimpleDHTErrDataChecksum 0x15
 // Error when temperature and humidity are zero, it shouldn't happen.
-#define SimpleDHTErrZeroSamples 106
+#define SimpleDHTErrZeroSamples 0x16
 // Error when pin is not initialized.
-#define SimpleDHTErrNoPin 107
+#define SimpleDHTErrNoPin 0x17
 
 class SimpleDHT {
 protected:
