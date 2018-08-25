@@ -69,6 +69,7 @@ void SimpleDHT::setPin(int pin) {
 #endif
 }
 
+#ifdef __AVR
 int SimpleDHT::getBitmask() {
     return bitmask;
 }
@@ -76,6 +77,7 @@ int SimpleDHT::getBitmask() {
 int SimpleDHT::getPort() {
     return port;
 }
+#endif
 
 long SimpleDHT::levelTime(byte level, int firstWait, int interval) {
     unsigned long time_start = micros();
