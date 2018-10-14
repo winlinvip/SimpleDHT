@@ -57,7 +57,7 @@ int SimpleDHT::read(byte* ptemperature, byte* phumidity, byte pdata[40]) {
 
 int SimpleDHT::read(int pin, byte* ptemperature, byte* phumidity, byte pdata[40]) {
     setPin(pin);
-    read(ptemperature, phumidity, pdata);
+    return read(ptemperature, phumidity, pdata);
 }
 
 void SimpleDHT::setPin(int pin) {
@@ -185,7 +185,7 @@ int SimpleDHT11::read2(float* ptemperature, float* phumidity, byte pdata[40]) {
 
 int SimpleDHT11::read2(int pin, float* ptemperature, float* phumidity, byte pdata[40]) {
     setPin(pin);
-    read2(ptemperature, phumidity, pdata);
+    return read2(ptemperature, phumidity, pdata);
 }
 
 int SimpleDHT11::sample(byte data[40]) {
@@ -294,7 +294,7 @@ int SimpleDHT22::read2(float* ptemperature, float* phumidity, byte pdata[40]) {
 
 int SimpleDHT22::read2(int pin, float* ptemperature, float* phumidity, byte pdata[40]) {
     setPin(pin);
-    read2(ptemperature, phumidity, pdata);
+    return read2(ptemperature, phumidity, pdata);
 }
 
 int SimpleDHT22::sample(byte data[40]) {
