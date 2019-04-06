@@ -46,7 +46,7 @@ void loop() {
 
   byte temperature2 = 0;
   byte humidity2 = 0;
-  if ((err = dht2.read(&temperature, &humidity, NULL)) != SimpleDHTErrSuccess) {
+  if ((err = dht2.read(&temperature2, &humidity2, NULL)) != SimpleDHTErrSuccess) {
     Serial.print("Communication error with Sensor 2, err="); Serial.println(err);delay(1000);
     return;
   }
@@ -55,7 +55,7 @@ void loop() {
   byte fb = temperature2 * 1.8 + 32;
   
   Serial.print("Sample OK: ");
-  Serial.print((int)temperature); Serial.print(" *C, "); 
+  Serial.print((int)temperature2); Serial.print(" *C, "); 
   Serial.print((int)fb); Serial.print(" *F, "); 
   Serial.print((int)humidity2); Serial.println(" H humidity");
 
