@@ -57,6 +57,7 @@ class SimpleDHT {
 protected:
     long levelTimeout = 5000000; // 500ms
     int pin = -1;
+    uint8_t pinInputMode = INPUT;
 #ifdef __AVR
     // For direct GPIO access (8-bit AVRs only), store port and bitmask
     // of the digital pin connected to the DHT.
@@ -67,6 +68,12 @@ protected:
 public:
     SimpleDHT();
     SimpleDHT(int pin);
+public:
+    // set the input mode of the pin from INPUT and INPUT_PULLUP
+    // to permit the use of the internal pullup resistor for
+    // for bare modules
+    // @param mode the pin input mode.
+    void setPinInputMode(uint8_t mode = INPUT);
 public:
     // to read from dht11 or dht22.
     // @param pin the DHT11 pin.
