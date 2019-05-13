@@ -52,6 +52,8 @@
 #define SimpleDHTErrZeroSamples 0x16
 // Error when pin is not initialized.
 #define SimpleDHTErrNoPin 0x17
+// Error when pin mode is invalid.
+#define SimpleDHTErrPinMode 0x18
 
 class SimpleDHT {
 protected:
@@ -73,7 +75,8 @@ public:
     // to permit the use of the internal pullup resistor for
     // for bare modules
     // @param mode the pin input mode.
-    void setPinInputMode(uint8_t mode = INPUT);
+    // @return SimpleDHTErrSuccess is success; otherwise, failed.
+    virtual int setPinInputMode(uint8_t mode);
 public:
     // to read from dht11 or dht22.
     // @param pin the DHT11 pin.
@@ -93,13 +96,13 @@ public:
 protected:
     // (eventually) change the pin configuration for existing instance
     // @param pin the DHT11 pin.
-    void setPin( int pin );
+    virtual void setPin(int pin);
     // only AVR - methods returning low level conf. of the pin
 #ifdef __AVR
     // @return bitmask to access pin state from port input register
-    int getBitmask();
+    virtual int getBitmask();
     // @return bitmask to access pin state from port input register
-    int getPort();
+    virtual int getPort();
 #endif
 protected:
     // measure and return time (in microseconds)

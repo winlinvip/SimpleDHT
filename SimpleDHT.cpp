@@ -60,9 +60,12 @@ int SimpleDHT::read(int pin, byte* ptemperature, byte* phumidity, byte pdata[40]
     return read(ptemperature, phumidity, pdata);
 }
 
-void SimpleDHT::setPinInputMode(uint8_t mode) {
-    if (mode != INPUT and mode != INPUT_PULLUP) mode = INPUT;
+int SimpleDHT::setPinInputMode(uint8_t mode) {
+    if (mode != INPUT && mode != INPUT_PULLUP) {
+        return SimpleDHTErrPinMode;
+    }
     this->pinInputMode = mode;
+    return SimpleDHTErrSuccess;
 }
 
 void SimpleDHT::setPin(int pin) {
