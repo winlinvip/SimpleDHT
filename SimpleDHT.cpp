@@ -60,6 +60,11 @@ int SimpleDHT::read(int pin, byte* ptemperature, byte* phumidity, byte pdata[40]
     return read(ptemperature, phumidity, pdata);
 }
 
+void SimpleDHT::setPinInputMode(uint8_t mode) {
+    if (mode != INPUT and mode != INPUT_PULLUP) mode = INPUT;
+    this->pinInputMode = mode;
+}
+
 void SimpleDHT::setPin(int pin) {
     this->pin = pin;
 #ifdef __AVR
@@ -196,7 +201,7 @@ int SimpleDHT11::sample(byte data[40]) {
     // notify DHT11 to start:
     //    1. PULL LOW 20ms.
     //    2. PULL HIGH 20-40us.
-    //    3. SET TO INPUT.
+    //    3. SET TO INPUT or INPUT_PULLUP.
     // Changes in timing done according to:
     //  [2] https://www.mouser.com/ds/2/758/DHT11-Technical-Data-Sheet-Translated-Version-1143054.pdf
     // - original values specified in code
@@ -210,7 +215,7 @@ int SimpleDHT11::sample(byte data[40]) {
     // @see https://github.com/winlinvip/SimpleDHT/issues/4
     // @see https://github.com/winlinvip/SimpleDHT/pull/5
     digitalWrite(pin, HIGH);           // 2.
-    pinMode(pin, INPUT);
+    pinMode(pin, this->pinInputMode);
     delayMicroseconds(25);             // specs [2]: 20-40us
 
     // DHT11 starting:
@@ -305,7 +310,7 @@ int SimpleDHT22::sample(byte data[40]) {
     // notify DHT11 to start:
     //    1. T(be), PULL LOW 1ms(0.8-20ms).
     //    2. T(go), PULL HIGH 30us(20-200us), use 40us.
-    //    3. SET TO INPUT.
+    //    3. SET TO INPUT or INPUT_PULLUP.
     pinMode(pin, OUTPUT);
     digitalWrite(pin, LOW);
     delayMicroseconds(1000);
@@ -313,7 +318,7 @@ int SimpleDHT22::sample(byte data[40]) {
     // @see https://github.com/winlinvip/SimpleDHT/issues/4
     // @see https://github.com/winlinvip/SimpleDHT/pull/5
     digitalWrite(pin, HIGH);
-    pinMode(pin, INPUT);
+    pinMode(pin, this->pinInputMode);
     delayMicroseconds(40);
 
     // DHT11 starting:
