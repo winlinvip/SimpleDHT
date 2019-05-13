@@ -71,15 +71,15 @@ public:
     SimpleDHT();
     SimpleDHT(int pin);
 public:
-    // set the input mode of the pin from INPUT and INPUT_PULLUP
+    // Set the input mode of the pin from INPUT and INPUT_PULLUP
     // to permit the use of the internal pullup resistor for
     // for bare modules
     // @param mode the pin input mode.
     // @return SimpleDHTErrSuccess is success; otherwise, failed.
     virtual int setPinInputMode(uint8_t mode);
 public:
-    // to read from dht11 or dht22.
-    // @param pin the DHT11 pin.
+    // Read from dht11 or dht22.
+    // @param pin The DHT11 pin.
     // @param ptemperature output, NULL to igore. In Celsius.
     // @param phumidity output, NULL to ignore.
     //      For DHT11, in H, such as 35H.
@@ -89,23 +89,23 @@ public:
     // @return SimpleDHTErrSuccess is success; otherwise, failed.
     virtual int read(byte* ptemperature, byte* phumidity, byte pdata[40]);
     virtual int read(int pin, byte* ptemperature, byte* phumidity, byte pdata[40]);
-    // to get a more accurate data.
+    // To get a more accurate data.
     // @remark it's available for dht22. for dht11, it's the same of read().
     virtual int read2(float* ptemperature, float* phumidity, byte pdata[40]) = 0;
     virtual int read2(int pin, float* ptemperature, float* phumidity, byte pdata[40]) = 0;
 protected:
-    // (eventually) change the pin configuration for existing instance
-    // @param pin the DHT11 pin.
+    // To (eventually) change the pin configuration for existing instance
+    // @param pin The DHT11 pin.
     virtual void setPin(int pin);
-    // only AVR - methods returning low level conf. of the pin
+    // For only AVR - methods returning low level conf. of the pin
 #ifdef __AVR
-    // @return bitmask to access pin state from port input register
+    // @return Bitmask to access pin state from port input register
     virtual int getBitmask();
-    // @return bitmask to access pin state from port input register
+    // @return Bitmask to access pin state from port input register
     virtual int getPort();
 #endif
 protected:
-    // measure and return time (in microseconds)
+    // Measure and return time (in microseconds)
     // with precision defined by interval between checking the state
     // while pin is in specified state (HIGH or LOW)
     // @param level    state which time is measured.
