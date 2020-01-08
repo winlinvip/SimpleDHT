@@ -174,6 +174,7 @@ Based on previous work by:
 - D. Faust
 - C. Stroie
 - Samlof
+- Agha Saad Fraz
 
 ## License
 
