@@ -57,7 +57,7 @@
 
 class SimpleDHT {
 protected:
-    long levelTimeout = 5000000; // 500ms
+    long levelTimeout = 500000; // 500ms
     int pin = -1;
     uint8_t pinInputMode = INPUT;
 #ifdef __AVR
