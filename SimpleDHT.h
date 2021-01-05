@@ -76,6 +76,9 @@ public:
     SimpleDHT();
     SimpleDHT(int pin);
 public:
+    // To (eventually) change the pin configuration for existing instance
+    // @param pin The DHT11 or DHT22 pin.
+    virtual void setPin(int pin);
     // Set the input mode of the pin from INPUT and INPUT_PULLUP
     // to permit the use of the internal pullup resistor for
     // for bare modules
@@ -98,10 +101,6 @@ public:
     // @remark it's available for dht22. for dht11, it's the same of read().
     virtual int read2(float* ptemperature, float* phumidity, byte pdata[40]) = 0;
     virtual int read2(int pin, float* ptemperature, float* phumidity, byte pdata[40]) = 0;
-public:
-    // To (eventually) change the pin configuration for existing instance
-    // @param pin The DHT11 or DHT22 pin.
-    virtual void setPin(int pin);
 protected:
     // For only AVR - methods returning low level conf. of the pin
 #ifdef __AVR

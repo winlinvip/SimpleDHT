@@ -31,6 +31,23 @@ SimpleDHT::SimpleDHT(int pin) {
     setPin(pin);
 }
 
+void SimpleDHT::setPin(int pin) {
+    this->pin = pin;
+#ifdef __AVR
+    // (only AVR) - set low level properties for configured pin
+    bitmask = digitalPinToBitMask(pin);
+    port = digitalPinToPort(pin);
+#endif
+}
+
+int SimpleDHT::setPinInputMode(uint8_t mode) {
+    if (mode != INPUT && mode != INPUT_PULLUP) {
+        return SimpleDHTErrPinMode;
+    }
+    this->pinInputMode = mode;
+    return SimpleDHTErrSuccess;
+}
+
 int SimpleDHT::read(byte* ptemperature, byte* phumidity, byte pdata[40]) {
     int ret = SimpleDHTErrSuccess;
 
@@ -58,23 +75,6 @@ int SimpleDHT::read(byte* ptemperature, byte* phumidity, byte pdata[40]) {
 int SimpleDHT::read(int pin, byte* ptemperature, byte* phumidity, byte pdata[40]) {
     setPin(pin);
     return read(ptemperature, phumidity, pdata);
-}
-
-int SimpleDHT::setPinInputMode(uint8_t mode) {
-    if (mode != INPUT && mode != INPUT_PULLUP) {
-        return SimpleDHTErrPinMode;
-    }
-    this->pinInputMode = mode;
-    return SimpleDHTErrSuccess;
-}
-
-void SimpleDHT::setPin(int pin) {
-    this->pin = pin;
-#ifdef __AVR
-    // (only AVR) - set low level properties for configured pin
-    bitmask = digitalPinToBitMask(pin);
-    port = digitalPinToPort(pin);
-#endif
 }
 
 #ifdef __AVR
