@@ -22,7 +22,8 @@ void loop() {
   byte data[40] = {0};
   int err = SimpleDHTErrSuccess;
   if ((err = dht11.read(&temperature, &humidity, data)) != SimpleDHTErrSuccess) {
-    Serial.print("Read DHT11 failed, err="); Serial.println(err);delay(1000);
+    Serial.print("Read DHT11 failed, err="); Serial.print(SimpleDHTErrCode(err));
+    Serial.print(","); Serial.println(SimpleDHTErrDuration(err); delay(1000);
     return;
   }
   
