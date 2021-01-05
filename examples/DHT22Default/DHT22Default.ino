@@ -23,7 +23,8 @@ void loop() {
   float humidity = 0;
   int err = SimpleDHTErrSuccess;
   if ((err = dht22.read2(&temperature, &humidity, NULL)) != SimpleDHTErrSuccess) {
-    Serial.print("Read DHT22 failed, err="); Serial.println(err);delay(2000);
+    Serial.print("Read DHT22 failed, err="); Serial.print(SimpleDHTErrCode(err));
+    Serial.print(","); Serial.println(SimpleDHTErrDuration(err)); delay(2000);
     return;
   }
   

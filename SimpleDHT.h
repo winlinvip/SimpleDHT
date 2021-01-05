@@ -34,30 +34,35 @@
 // @see https://github.com/winlinvip/SimpleDHT/issues/25
 #define simpleDHTCombileError(t, err) ((t << 8) & 0xff00) | (err & 0x00ff)
 
+// Get the time duration from error.
+#define SimpleDHTErrDuration(err) ((err&0xff00)>>8)
+// Get the error code defined bellow.
+#define SimpleDHTErrCode(err) (err&0x00ff)
+
 // Success.
 #define SimpleDHTErrSuccess 0
 // Error to wait for start low signal.
-#define SimpleDHTErrStartLow 0x10
+#define SimpleDHTErrStartLow 16
 // Error to wait for start high signal.
-#define SimpleDHTErrStartHigh 0x11
+#define SimpleDHTErrStartHigh 17
 // Error to wait for data start low signal.
-#define SimpleDHTErrDataLow 0x12
+#define SimpleDHTErrDataLow 18
 // Error to wait for data read signal.
-#define SimpleDHTErrDataRead 0x13
+#define SimpleDHTErrDataRead 19
 // Error to wait for data EOF signal.
-#define SimpleDHTErrDataEOF 0x14
+#define SimpleDHTErrDataEOF 20
 // Error to validate the checksum.
-#define SimpleDHTErrDataChecksum 0x15
+#define SimpleDHTErrDataChecksum 21
 // Error when temperature and humidity are zero, it shouldn't happen.
-#define SimpleDHTErrZeroSamples 0x16
+#define SimpleDHTErrZeroSamples 22
 // Error when pin is not initialized.
-#define SimpleDHTErrNoPin 0x17
+#define SimpleDHTErrNoPin 23
 // Error when pin mode is invalid.
-#define SimpleDHTErrPinMode 0x18
+#define SimpleDHTErrPinMode 24
 
 class SimpleDHT {
 protected:
-    long levelTimeout = 5000000; // 500ms
+    long levelTimeout = 500000; // 500ms
     int pin = -1;
     uint8_t pinInputMode = INPUT;
 #ifdef __AVR
@@ -71,6 +76,9 @@ public:
     SimpleDHT();
     SimpleDHT(int pin);
 public:
+    // To (eventually) change the pin configuration for existing instance
+    // @param pin The DHT11 or DHT22 pin.
+    virtual void setPin(int pin);
     // Set the input mode of the pin from INPUT and INPUT_PULLUP
     // to permit the use of the internal pullup resistor for
     // for bare modules
@@ -94,9 +102,6 @@ public:
     virtual int read2(float* ptemperature, float* phumidity, byte pdata[5]) = 0;
     virtual int read2(int pin, float* ptemperature, float* phumidity, byte pdata[5]) = 0;
 protected:
-    // To (eventually) change the pin configuration for existing instance
-    // @param pin The DHT11 pin.
-    virtual void setPin(int pin);
     // For only AVR - methods returning low level conf. of the pin
 #ifdef __AVR
     // @return Bitmask to access pin state from port input register

@@ -31,6 +31,23 @@ SimpleDHT::SimpleDHT(int pin) {
     setPin(pin);
 }
 
+void SimpleDHT::setPin(int pin) {
+    this->pin = pin;
+#ifdef __AVR
+    // (only AVR) - set low level properties for configured pin
+    bitmask = digitalPinToBitMask(pin);
+    port = digitalPinToPort(pin);
+#endif
+}
+
+int SimpleDHT::setPinInputMode(uint8_t mode) {
+    if (mode != INPUT && mode != INPUT_PULLUP) {
+        return SimpleDHTErrPinMode;
+    }
+    this->pinInputMode = mode;
+    return SimpleDHTErrSuccess;
+}
+
 int SimpleDHT::read(byte* ptemperature, byte* phumidity, byte pdata[5]) {
     int ret = SimpleDHTErrSuccess;
 
@@ -58,23 +75,6 @@ int SimpleDHT::read(byte* ptemperature, byte* phumidity, byte pdata[5]) {
 int SimpleDHT::read(int pin, byte* ptemperature, byte* phumidity, byte pdata[5]) {
     setPin(pin);
     return read(ptemperature, phumidity, pdata);
-}
-
-int SimpleDHT::setPinInputMode(uint8_t mode) {
-    if (mode != INPUT && mode != INPUT_PULLUP) {
-        return SimpleDHTErrPinMode;
-    }
-    this->pinInputMode = mode;
-    return SimpleDHTErrSuccess;
-}
-
-void SimpleDHT::setPin(int pin) {
-    this->pin = pin;
-#ifdef __AVR
-    // (only AVR) - set low level properties for configured pin
-    bitmask = digitalPinToBitMask(pin);
-    port = digitalPinToPort(pin);
-#endif
 }
 
 #ifdef __AVR
@@ -307,7 +307,7 @@ int SimpleDHT22::sample(byte data[5]) {
     memset(data, 0, 5);
 
     // According to protocol: http://akizukidenshi.com/download/ds/aosong/AM2302.pdf
-    // notify DHT11 to start:
+    // notify DHT22 to start:
     //    1. T(be), PULL LOW 1ms(0.8-20ms).
     //    2. T(go), PULL HIGH 30us(20-200us), use 40us.
     //    3. SET TO INPUT or INPUT_PULLUP.
@@ -321,7 +321,7 @@ int SimpleDHT22::sample(byte data[5]) {
     pinMode(pin, this->pinInputMode);
     delayMicroseconds(5);
 
-    // DHT11 starting:
+    // DHT22 starting:
     //    1. T(rel), PULL LOW 80us(75-85us).
     //    2. T(reh), PULL HIGH 80us(75-85us).
     long t = 0;
@@ -332,7 +332,7 @@ int SimpleDHT22::sample(byte data[5]) {
         return simpleDHTCombileError(t, SimpleDHTErrStartHigh);
     }
 
-    // DHT11 data transmite:
+    // DHT22 data transmite:
     //    1. T(LOW), 1bit start, PULL LOW 50us(48-55us).
     //    2. T(H0), PULL HIGH 26us(22-30us), bit(0)
     //    3. T(H1), PULL HIGH 70us(68-75us), bit(1)
@@ -350,7 +350,7 @@ int SimpleDHT22::sample(byte data[5]) {
           bitWrite(data[j / 8], j % 8, (t > 40 ? 1 : 0));     // specs: 22-30us -> 0, 70us -> 1
     }
 
-    // DHT11 EOF:
+    // DHT22 EOF:
     //    1. T(en), PULL LOW 50us(45-55us).
     t = levelTime(LOW);
     if (t < 24) {
