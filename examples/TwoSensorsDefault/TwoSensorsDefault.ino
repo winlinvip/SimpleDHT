@@ -29,7 +29,7 @@ void loop() {
   int err = SimpleDHTErrSuccess;
   if ((err = dht1.read(&temperature, &humidity, NULL)) != SimpleDHTErrSuccess) {
     Serial.print("Read Sensor 1 failed, err="); Serial.print(SimpleDHTErrCode(err));
-    Serial.print(","); Serial.println(SimpleDHTErrDuration(err); delay(1000);
+    Serial.print(","); Serial.println(SimpleDHTErrDuration(err)); delay(1000);
     return;
   }
 
@@ -49,7 +49,7 @@ void loop() {
   byte humidity2 = 0;
   if ((err = dht2.read(&temperature2, &humidity2, NULL)) != SimpleDHTErrSuccess) {
     Serial.print("Read Sensor 2 failed, err="); Serial.print(SimpleDHTErrCode(err));
-    Serial.print(","); Serial.println(SimpleDHTErrDuration(err); delay(1000);
+    Serial.print(","); Serial.println(SimpleDHTErrDuration(err)); delay(1000);
     return;
   }
 
