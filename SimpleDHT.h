@@ -98,10 +98,11 @@ public:
     // @remark it's available for dht22. for dht11, it's the same of read().
     virtual int read2(float* ptemperature, float* phumidity, byte pdata[40]) = 0;
     virtual int read2(int pin, float* ptemperature, float* phumidity, byte pdata[40]) = 0;
-protected:
+public:
     // To (eventually) change the pin configuration for existing instance
     // @param pin The DHT11 or DHT22 pin.
     virtual void setPin(int pin);
+protected:
     // For only AVR - methods returning low level conf. of the pin
 #ifdef __AVR
     // @return Bitmask to access pin state from port input register
