@@ -121,7 +121,7 @@ protected:
     // @remark please use simple_dht11_read().
     virtual byte reverse(byte data);
     // read temperature and humidity from dht11.
-    // @param data a byte[40] to read bits to 5bytes.
+    // @param data a byte[5] to read bits to 5bytes.
     // @return 0 success; otherwise, error.
     // @remark please use simple_dht11_read().
     virtual int sample(byte data[5]) = 0;
