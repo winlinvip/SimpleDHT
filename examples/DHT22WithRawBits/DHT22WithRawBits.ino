@@ -21,7 +21,7 @@ void loop() {
   //    if user doesn't care about the accurate data, use read to get a byte data, such as 10*C.
   float temperature = 0;
   float humidity = 0;
-  byte data[5] = {0};
+  byte data[40] = {0};
   int err = SimpleDHTErrSuccess;
   if ((err = dht22.read2(&temperature, &humidity, data)) != SimpleDHTErrSuccess) {
     Serial.print("Read DHT22 failed, err="); Serial.print(SimpleDHTErrCode(err));
@@ -30,10 +30,11 @@ void loop() {
   }
   
   Serial.print("Sample RAW Bits: ");
-  for (int i = 0; i < 5; i++) {
-      for (int n = 0; n < 8; n++)
-          Serial.print(bitRead(data[i], n));
+  for (int i = 0; i < 40; i++) {
+    Serial.print((int)data[i]);
+    if (i > 0 && ((i + 1) % 4) == 0) {
       Serial.print(' ');
+    }
   }
   Serial.println("");
   
